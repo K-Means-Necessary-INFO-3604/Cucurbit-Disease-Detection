@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+  <head>
+  
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>{% block title %}{% endblock %}</title>
+
+  </head>
+  <body>
+    <style>
+      .navbar-form label {
+          color: white !important;
+      }
+      .logout {
+        background-color: rgb(230, 62, 62);
+      }
+    </style>
+
+    <nav class="green lighten-1">
+        <div class="nav-wrapper">
+            <a href="#!" class="brand-logo center">{% block page %}Name{% endblock %}</a>
+            
+            {% if is_authenticated %}
+              <ul id="nav-mobile" class="left">
+                <li><i style="font-size: 300%;"class="dropdown-trigger material-icons" data-target="dropdown-1">menu</i></li>    
+              </ul>
+              <ul id="nav-mobile" class="right">
+                <li ><a href="/logout">Logout</a></li>
+              </ul>
+            {% endif %}
+            
+            <ul id="dropdown-1" class="dropdown-content">
+                <li><a href="/uploadPage">Upload</a></li>
+                <li><a>History</a></li>
+                <li><a href="/aboutUsPage">About Us</a></li>
+                <li class="logout"><a href="/logout" style="color: white;">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container" id="content">{% block content %}{% endblock %}</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+       M.AutoInit();
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+              {% for message in messages %}
+              M.toast({html: '{{message}}'})
+              {% endfor %}
+          {% endif %}
+        {% endwith %}
+       
+    </script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        var elems = document.querySelectorAll('.dropdown-trigger');
+        var instances = M.Dropdown.init(elems, options);
+      });
+    </script>
+  </body>
+</html>
