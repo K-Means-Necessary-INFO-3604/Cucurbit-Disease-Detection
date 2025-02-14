@@ -24,16 +24,16 @@ def get_user_page():
 @auth_views.route('/identify', methods=['GET'])
 @jwt_required()
 def identify_page():
-    return render_template('message.html', title="Identify", message=f"You are logged in as {current_user.id} - {current_user.username}")
+    return render_template('message.html', title="Identify", message=f"You are logged in as {current_user.id} - {current_user.email}")
 
 
 @auth_views.route('/login', methods=['POST'])
 def login_action():
     data = request.form
-    token = login(data['username'], data['password'])
+    token = login(data['email'], data['password'])
     response = redirect("/uploadPage")
     if not token:
-        flash('Bad username or password given'), 401
+        flash('Bad email or password given'), 401
         response = redirect("/")
     else:
         flash('Login Successful')
@@ -54,9 +54,9 @@ API Routes
 @auth_views.route('/api/login', methods=['POST'])
 def user_login_api():
   data = request.json
-  token = login(data['username'], data['password'])
+  token = login(data['email'], data['password'])
   if not token:
-    return jsonify(message='bad username or password given'), 401
+    return jsonify(message='bad email or password given'), 401
   response = jsonify(access_token=token) 
   set_access_cookies(response, token)
   return response
@@ -64,7 +64,7 @@ def user_login_api():
 @auth_views.route('/api/identify', methods=['GET'])
 @jwt_required()
 def identify_user():
-    return jsonify({'message': f"username: {current_user.username}, id : {current_user.id}"})
+    return jsonify({'message': f"email: {current_user.email}, id : {current_user.id}"})
 
 @auth_views.route('/api/logout', methods=['GET'])
 def logout_api():
