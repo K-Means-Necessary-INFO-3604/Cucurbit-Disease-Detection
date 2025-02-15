@@ -1,11 +1,56 @@
 {% extends "layout.html" %}
-{% block title %}Home{% endblock %}
+{% block title %}Upload{% endblock %}
 
 {{ super() }}
 
 {% block content %}
+    
+    <style>
+        
+        .uploadImage{
+            width: 50vw; 
+            height:50vh; 
+            background-color: rgb(43, 56, 56); 
+            display: flex;
+            margin: auto;
+        }
+        .uploadForm{
+            margin-top: 10vh;
+        }
+    </style>
 
-<h1> In progress... </h1>
-<p>Currently developing</p>
+    <form class="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
+        <input id="image" type="file" name="file" onchange="showImage()" required>
+        <p>
+            <button class="btn"> Submit </button>
+        </p>
+    </form>
 
+    <img id="upload" class="uploadImage">
+
+
+    <script>
+        function showImage(){
+            const input = document.getElementById("image");
+            const img = input.files[0];
+            const display = document.getElementById("upload");
+            const formData = new FormData();
+            formData.append("file", img);
+            fetch("api/image", {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.error){
+                    M.toast({'html' : data.error});
+                    display.src = "";
+                    image.value = "";
+                }
+                if(data.image){
+                    display.src = `data:image/jpeg;base64,${data.image}`
+                }
+            })
+        }
+    </script>
 {% endblock %}
