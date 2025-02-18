@@ -17,6 +17,9 @@
       .logout {
         background-color: rgb(230, 62, 62);
       }
+      .login{
+        background-color: #33c488;
+      }
     </style>
 
     <nav class="green lighten-1">
@@ -30,14 +33,25 @@
               <ul id="nav-mobile" class="right">
                 <li ><a href="/logout">Logout</a></li>
               </ul>
+            {% else %}
+              <ul id="nav-mobile" class="left">
+                <li><i style="font-size: 300%;"class="dropdown-trigger material-icons" data-target="dropdown-2">menu</i></li>    
+              </ul>
             {% endif %}
             
             <ul id="dropdown-1" class="dropdown-content">
                 <li><a href="/uploadPage">Upload</a></li>
-                <li><a>History</a></li>
-                <li><a href="/aboutUsPage">About Us</a></li>
+                <li><a href="/developing">History</a></li>
+                <li><a href="/developing">About Us</a></li>
                 <li class="logout"><a href="/logout" style="color: white;">Logout</a></li>
             </ul>
+
+            <ul id="dropdown-2" class="dropdown-content">
+              <li><a href="/uploadPage">Upload</a></li>
+              <li><a href="/developing">History</a></li>
+              <li><a href="/developing">About Us</a></li>
+              <li class="login"><a href="/" style="color: white;">Login</a></li>
+          </ul>
         </div>
     </nav>
 
@@ -54,7 +68,7 @@
               {% endfor %}
           {% endif %}
         {% endwith %}
-       
+
     </script>
 
     <script>

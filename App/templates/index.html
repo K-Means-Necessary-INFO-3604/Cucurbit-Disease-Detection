@@ -4,6 +4,97 @@
 {{ super() }}
 
 {% block content %}
-    
+
+    <style>
+        
+        .btn{
+            background-color: #33c488;
+        }
+        .container{
+            display:grid;
+            margin:auto;
+            justify-content: center;
+            width: 100vw;
+        }
+        h2{
+            margin:auto;
+            margin-top:10vh;
+        }
+        .hidden{
+            display:none;
+        }
+        .switch{
+            margin-top:5vh;
+            display:flex;
+        }
+        .switch button{
+            margin-left:10px;
+        }
+        form{
+            margin-top:10px;
+            width:50vw;
+        }
+        #guestBtn{
+            width:50vw;
+            margin:auto;
+            margin-top: 20px;
+        }
+        
+        
+    </style>
+
+    <div class="container">
+        <div id="loginSection">
+            <h2>Login</h2>
+            <form method="POST" action="/login">        
+                <input name="email" placeholder="Enter email..." required>
+                <input name="password" placeholder="Enter password..." type="password" required>
+                <button class="btn"> Login </button>
+            </form>
+            <div class="switch">
+                <p>Don't have an account?</p>
+                <button onclick="showSignup()" class="btn">Sign up!</button>
+            </div>
+        </div>
+
+        <div id="signupSection" class="hidden">
+            <h2>Sign up</h2>
+            <form method="POST" action="/signup">        
+                <input type="text" name="email" placeholder="Enter email..." required>
+                <input type="text" name="password" placeholder="Enter password..." required>
+                <input type="text" name="password2" placeholder="Confirm password..." required>
+                <button class="btn"> Sign Up </button>
+            </form>
+            <div class="switch">
+                <p>Already have an account?</p>
+                <button onclick="showLogin()" class="btn">Login!</button>
+            </div>
+        </div>
+
+        <a href="/uploadPage" class="btn" id="guestBtn"> Continue as Guest </a>
+    </div>
+
+    {% if signup %}
+        <div id="signupRequest"></div>
+    {% endif %}
+
+    <script>
+        const login = document.getElementById("loginSection");
+        const signup = document.getElementById("signupSection");
+
+        function showLogin(){
+            signup.classList.add("hidden");
+            login.classList.remove("hidden");
+        }
+        function showSignup(){
+            login.classList.add("hidden");
+            signup.classList.remove("hidden");
+        }
+
+        if(signupRequest){
+            showSignup();
+        }
+        
+    </script>
 
 {% endblock %}

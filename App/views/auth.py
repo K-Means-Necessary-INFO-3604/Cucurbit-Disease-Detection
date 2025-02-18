@@ -5,7 +5,10 @@ from flask_jwt_extended import jwt_required, current_user, unset_jwt_cookies, se
 from.index import index_views
 
 from App.controllers import (
-    login
+    login,
+    create_user,
+    user_exists,
+    confirm_password
 )
 
 auth_views = Blueprint('auth_views', __name__, template_folder='../templates')
@@ -24,21 +27,45 @@ def get_user_page():
 @auth_views.route('/identify', methods=['GET'])
 @jwt_required()
 def identify_page():
-    return render_template('message.html', title="Identify", message=f"You are logged in as {current_user.id} - {current_user.username}")
+    return render_template('message.html', title="Identify", message=f"You are logged in as {current_user.id} - {current_user.email}")
 
 
 @auth_views.route('/login', methods=['POST'])
 def login_action():
     data = request.form
-    token = login(data['username'], data['password'])
+    token = login(data['email'], data['password'])
     response = redirect("/uploadPage")
     if not token:
-        flash('Bad username or password given'), 401
+        flash('Bad email or password given'), 401
         response = redirect("/")
     else:
         flash('Login Successful')
         set_access_cookies(response, token) 
     return response
+
+@auth_views.route('/signup', methods=['GET','POST'])
+def signup_action():
+
+    if request.method == 'GET':
+        return render_template("index.html", signup=True)
+    data = request.form
+    email = data['email']
+    password = data['password']
+    confirmation = data['password2']
+
+    if confirm_password(password, confirmation) == False:
+        flash("Passwords do not match")
+        return render_template("index.html", signup=True)
+    if user_exists(email) == True:
+        flash("User already exists")
+        return render_template("index.html", signup=True)
+    newUser = create_user(email, password)
+    token = login(email,password)
+    flash("User created")
+    response = redirect("/uploadPage")
+    set_access_cookies(response, token)
+    return response
+
 
 @auth_views.route('/logout', methods=['GET'])
 def logout_action():
@@ -54,9 +81,9 @@ API Routes
 @auth_views.route('/api/login', methods=['POST'])
 def user_login_api():
   data = request.json
-  token = login(data['username'], data['password'])
+  token = login(data['email'], data['password'])
   if not token:
-    return jsonify(message='bad username or password given'), 401
+    return jsonify(message='bad email or password given'), 401
   response = jsonify(access_token=token) 
   set_access_cookies(response, token)
   return response
@@ -64,7 +91,7 @@ def user_login_api():
 @auth_views.route('/api/identify', methods=['GET'])
 @jwt_required()
 def identify_user():
-    return jsonify({'message': f"username: {current_user.username}, id : {current_user.id}"})
+    return jsonify({'message': f"email: {current_user.email}, id : {current_user.id}"})
 
 @auth_views.route('/api/logout', methods=['GET'])
 def logout_api():
