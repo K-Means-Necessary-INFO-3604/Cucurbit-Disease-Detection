@@ -7,12 +7,6 @@ def create_user(email, password):
     db.session.commit()
     return newuser
 
-def create_user(email, password):
-    newuser = User(email=email, password=password)
-    db.session.add(newuser)
-    db.session.commit()
-    return newuser
-
 def user_exists(email):
     user = User.query.filter_by(email=email).first()
     if user:

@@ -19,13 +19,21 @@
         }
     </style>
 
-    <form class="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
-        <input id="image" type="file" name="file" onchange="showImage()" required>
-        <p>
-            <button class="btn"> Submit </button>
-        </p>
-    </form>
-
+    {% if is_authenticated %}
+        <form class="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
+            <input id="image" type="file" name="file" onchange="showImage()" required>
+            <p>
+                <button class="btn"> Submit </button>
+            </p>
+        </form>
+    {% else %}
+        <form class="uploadForm" action="/uploadGuest" method="POST" enctype="multipart/form-data">
+            <input id="image" type="file" name="file" onchange="showImage()" required>
+            <p>
+                <button class="btn"> Submit </button>
+            </p>
+        </form>
+    {% endif %}
     <img id="upload" class="uploadImage">
 
 
