@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block title %}Upload{% endblock %}
+
+{{ super() }}
+
+{% block content %}
+    
+    <style>
+        .container{
+            margin-left:5px;
+        }
+        img{
+            height: 25vh;
+            width:25vw;
+        }
+        .results h5{
+            margin-top: 10vh;
+        }
+    </style>
+
+    <div class="container">
+    {% if upload %}
+    <h2>Results: </h2>
+    <div class="results">
+        <h5> Disease type: <!--{{upload.type}} --></h5>
+        <h5> Severity: <!--{{upload.severity}}--></h5>
+        <h5> Remedial Actions: <!--{{upload.action}}--></h5>
+        <img src="{{upload}}" class="uploadImage">
+    </div>
+    {% else %}
+    <div>
+        <h2>Error </h2>
+        <p>Error displaying results</p>
+        <a class="btn" href="/"> Go Home </a>
+    </div>
+    {% endif %}
+    </div>
+
+{% endblock %}
