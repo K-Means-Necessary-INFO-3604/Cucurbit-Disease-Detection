@@ -60,7 +60,7 @@ def get_uploaded_image(id):
         return jsonify({"error": "Upload not found"})
     img = upload.image
     encoded_image = base64.b64encode(img).decode("UTF-8")
-    return jsonify({"image" : encoded_image})
+    return jsonify({"id" : upload.id, "date" : upload.date, "image" : encoded_image, "severity" : upload.severity, "type" : upload.disease_type, "actions" : upload.actions})
 
 
 @upload_views.route("/api/uploads", methods=['GET'])
