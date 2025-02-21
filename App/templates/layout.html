@@ -11,8 +11,8 @@
   </head>
   <body>
     <style>
-      .navbar-form label {
-          color: white !important;
+      .navbar{
+          background-color: #0ba965;
       }
       .logout {
         background-color: rgb(230, 62, 62);
@@ -22,7 +22,7 @@
       }
     </style>
 
-    <nav class="green lighten-1">
+    <nav class="navbar">
         <div class="nav-wrapper">
             <a href="#!" class="brand-logo center">{% block page %}Name{% endblock %}</a>
             
@@ -42,13 +42,13 @@
             <ul id="dropdown-1" class="dropdown-content">
                 <li><a href="/uploadPage">Upload</a></li>
                 <li><a href="/historyPage">History</a></li>
-                <li><a href="/developing">About Us</a></li>
+                <li><a href="/aboutUsPage">About Us</a></li>
                 <li class="logout"><a href="/logout" style="color: white;">Logout</a></li>
             </ul>
 
             <ul id="dropdown-2" class="dropdown-content">
               <li><a href="/uploadPage">Upload</a></li>
-              <li><a href="/developing">About Us</a></li>
+              <li><a href="/aboutUsPage">About Us</a></li>
               <li class="login"><a href="/" style="color: white;">Login</a></li>
           </ul>
         </div>
