@@ -1,0 +1,147 @@
+{% extends "layout.html" %}
+{% block title %}Upload{% endblock %}
+
+{{ super() }}
+
+{% block content %}
+    
+    <style>
+        .set{
+            display:flex;
+            flex-wrap: wrap;
+            width:80vw;
+            margin:0 auto;
+        }
+        .card{
+            margin-top:5vh;
+            width:40%;
+            margin-left:10px;
+        }
+        .date-header{
+            margin-top: 10vh;
+        }
+        .image{
+            min-height: 100px;
+            max-height: 200px;
+        }
+        #selected_img{
+            width:50vw;
+            height:50vh
+        }
+        .hidden{
+            display:none;
+        }
+        #info{
+            display: flex;
+            flex-wrap: wrap;
+        }
+        #info p{
+            margin-left: 5vw;
+        }
+        #header-2{
+            display:inline-flex;
+        }
+        #header-2 p{
+            margin-left:2vw;
+        }
+        #back-to-history{
+            display: inline-flex;
+        }
+
+    </style>
+
+    <div id="section">
+        <h2>History</h2>
+        {% for date in dates %}
+            <h3 class="date-header">{{date.strftime("%d %B %Y")}}</h3>
+            <div class="set">
+                {% for upload in uploads %}
+                    {% if upload.date == date %}
+                            <div class="card" onclick="selectUpload('{{upload.id}}')">
+                                <div class="card-image">
+                                    <img src="" data-id="{{upload.id}}">
+                                </div>
+                                <div class="card-content">
+                                    <p> Severity - {{upload.severity}} </p>
+                                    <p> Type - {{upload.disease_type}} </p>
+                                    <p> Actions - {{upload.actions}} </p>
+                                </div>
+                            </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <div id="selected" class="hidden">
+        <h2 id="selected_date"></h2>
+        <div id="header-2">
+            <button id="back-to-history" class="btn" onclick="showUploads()"> <i class="material-icons">keyboard_backspace</i> Back to history</button>
+            <p id="selected_id"></p>
+        </div>
+        <img id="selected_img" src="">
+        <div id="info">
+            <p id="severity"></p>
+            <p id="type"></p>
+            <p id="actions"></p>
+        </div>
+    </div>
+
+        
+    <script>
+        const selected = document.getElementById("selected")
+        const section = document.getElementById("section")
+        const date = document.getElementById("selected_date")
+        const selected_id = document.getElementById("selected_id")
+        const img = document.getElementById("selected_img")
+        const severity = document.getElementById("severity")
+        const type = document.getElementById("type")
+        const actions = document.getElementById("actions")
+        const uploads = document.querySelectorAll('[data-id]')
+        
+        uploads.forEach((upload) => {
+            const uploadId = upload.getAttribute('data-id');
+            fetch(`/api/uploadedImage/${uploadId}`)
+            .then(response => response.json())
+            .then(data => {
+                if(data.error){
+                    M.toast({'html' : data.error});
+                    upload.src = "";
+                }
+                if(data.image){
+                    upload.src = `data:image/jpeg;base64,${data.image}`;
+                }
+            });
+        });
+
+        function selectUpload(updated){
+            fetch(`/api/uploadedImage/${updated}`)
+            .then(response => response.json())
+            .then(data => {
+                if(data.error){
+                    M.toast({'html' : data.error});
+                }
+                if(data.image){
+                    let dateExtract = new Date(data.date)
+                    selected.classList.remove("hidden");
+                    section.classList.add("hidden");
+                    date.innerText = `${dateExtract.toISOString().split('T')[0]}`;
+                    selected_id.innerText = `Upload id - ${data.id}`;
+                    img.src = `data:image/jpeg;base64,${data.image}`;
+                    severity.innerText = `Severity - ${data.severity}`;
+                    type.innerText = `Disease type - ${data.type}`;
+                    actions.innerText = `Actions - ${data.actions}`;
+                }
+            });
+        }
+
+        function showUploads(){
+            selected.classList.add("hidden");
+            section.classList.remove("hidden");
+        }
+
+    </script>
+    
+
+
+{% endblock %}
