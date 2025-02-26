@@ -10,24 +10,41 @@
             margin-left:5px;
         }
         img{
-            height: 25vh;
-            width:25vw;
+            height:50%;
+            width:100%;
+            object-fit: contain;
         }
-        .results h5{
-            margin-top: 10vh;
+        .results{
+            display:block
+        }
+        blockquote{
+            margin-top: 5vh;
+        }
+        #header-2{
+            display:inline-flex;
+        }
+        #header-2 p{
+            margin-left:2vw;
+        }
+        #back-to-upload{
+            display: inline-flex;
         }
     </style>
 
     <div class="container">
     {% if upload %}
     <h2>Results: </h2>
+    <div id="header-2">
+        <a id="back-to-upload" class="btn" href="/uploadPage"> <i class="material-icons">keyboard_backspace</i> Back to upload</a>
+    </div>
+    <blockquote>Results are under the image</blockquote>
     <div class="results">
-        <h5> Disease type: {{upload.disease_type}}</h5>
-        <h5> Severity: {{upload.severity}}</h5>
-        <h5> Remedial Actions: {{upload.actions}}</h5>
         {% if image %}
             <img src="{{image}}" class="uploadImage">
         {% endif %}
+        <p> Disease type: {{upload.disease_type}}</p>
+        <p> Severity: {{upload.severity}}</p>
+        <p> Remedial Actions: {{upload.actions}}</p>
     </div>
     {% else %}
     <div>
