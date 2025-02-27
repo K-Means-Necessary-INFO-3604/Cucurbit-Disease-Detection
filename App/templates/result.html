@@ -6,46 +6,87 @@
 {% block content %}
     
     <style>
+        body{
+            overflow-x: hidden;
+            padding:0;
+            margin:0;
+        }
         .container{
-            margin-left:5px;
+            background-color: #24374f;
+            background-size: cover;
+            color:white;
+            height:100vh;
+            width:100vw;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
         }
         img{
-            height:50%;
-            width:100%;
+            display:flex;
+            margin:0 auto;
+            max-height:50%;
+            max-width:100%;
             object-fit: contain;
         }
         .results{
-            display:block
+            display:grid;
+            justify-content: center;
+        }
+        .results h5{
+            font-weight: bold;
+            justify-self: center;
+        }
+        .results p{
+            justify-self: center;
         }
         blockquote{
-            margin-top: 5vh;
+            margin-top: 5svh;
+            margin-left: 5px;
         }
         #header-2{
+            margin-top: 10px;
+            margin-left: 5px;
             display:inline-flex;
-        }
-        #header-2 p{
-            margin-left:2vw;
         }
         #back-to-upload{
             display: inline-flex;
         }
+        .imageSection{
+            width:100vw;
+            height:100dvh;
+            background-color: #3c6a50;
+            color:white
+        }
+        .imageSection h2{
+            margin-top: 0;
+        }
+        .imageSection p{
+            display: flex;
+            justify-content: center;
+        }
+        
     </style>
-
+    
     <div class="container">
     {% if upload %}
-    <h2>Results: </h2>
+    <div style="display:flex">
+        <h2 style="margin:0; padding:0;">Results: </h2>
+        <i style="cursor: pointer; font-size: 50px; margin-left: auto; margin-right: 1vw;"onclick="scrollDown()" class="material-symbols-outlined">arrow_circle_down</i>
+    </div>
     <div id="header-2">
         <a id="back-to-upload" class="btn" href="/uploadPage"> <i class="material-icons">keyboard_backspace</i> Back to upload</a>
     </div>
-    <blockquote>Results are under the image</blockquote>
+        <blockquote>Scroll to see the uploaded image</blockquote>
     <div class="results">
-        {% if image %}
-            <img src="{{image}}" class="uploadImage">
-        {% endif %}
-        <p> Disease type: {{upload.disease_type}}</p>
-        <p> Severity: {{upload.severity}}</p>
-        <p> Remedial Actions: {{upload.actions}}</p>
+        
+        <h5> Disease type: </h5>
+        <p>{{upload.disease_type}}</p>
+        <h5> Severity: </h5>
+        <p>{{upload.severity}} %</p>
+        <h5> Remedial Actions: </h5>
+        <p>{{upload.actions}}</p>
+        
     </div>
+
     {% else %}
     <div>
         <h2>Error </h2>
@@ -54,5 +95,50 @@
     </div>
     {% endif %}
     </div>
+
+    {% if upload %}
+    <div class="imageSection">
+        <i style="cursor: pointer; font-size: 50px;"onclick="backToTop()" class="material-symbols-outlined">arrow_circle_up</i>
+
+        <div style="text-align: center;">
+            <h2>Upload</h2>
+        </div>
+        <div style="margin-top: 10svh;">
+        <p id="date">{{upload.date}}</p>
+        {% if is_authenticated %}
+            <p>Upload ID - {{upload.id}}</p>
+        {% else %}
+            <p>Upload ID - Must be logged in</p>
+        {% endif %}
+        </div>
+        {% if image %}
+            <img src="{{image}}" class="uploadImage">
+        {% endif %}
+    </div>
+    {% endif %}
+
+
+    <script>
+        const dateElement = document.getElementById("date")
+        const dateWithTime = dateElement.innerText
+        let dateExtract = new Date(dateWithTime);
+        dateElement.innerText = `Date - ${dateExtract.toISOString().split('T')[0]}`;
+
+        function backToTop(){
+            window.scrollTo({
+                top: 0,
+                left: 0,
+                behavior: "smooth",
+            });
+        }
+        function scrollDown() {
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                left: 0,
+                behavior: "smooth"
+            });
+        }
+        
+    </script>
 
 {% endblock %}
