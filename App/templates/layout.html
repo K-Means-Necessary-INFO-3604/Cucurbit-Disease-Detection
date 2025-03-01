@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>{% block title %}{% endblock %}</title>
 
@@ -24,8 +25,8 @@
 
     <nav class="navbar">
         <div class="nav-wrapper">
-            <a href="#!" class="brand-logo center">{% block page %}Name{% endblock %}</a>
-            
+            <img src="static/images/PhytoGuard.jpg" style="height:100%; object-fit: contain;"class="brand-logo center">{% block page %}{% endblock %}</img>
+
             {% if is_authenticated %}
               <ul id="nav-mobile" class="left">
                 <li><i style="font-size: 300%;"class="dropdown-trigger material-icons" data-target="dropdown-1">menu</i></li>    
