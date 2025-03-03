@@ -1,9 +1,6 @@
 from flask_jwt_extended import create_access_token, JWTManager, get_jwt_identity, verify_jwt_in_request
 from App.models import User
 from App.controllers.mail import validate_email_syntax, send_verification
-import base64
-import urllib.parse
-import bcrypt
 from cryptography.fernet import Fernet
 
 key = Fernet.generate_key()
