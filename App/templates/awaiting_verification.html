@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+{% block title %}Home{% endblock %}
+
+{{ super() }}
+
+{% block content %}
+
+    <style>
+        
+        .btn{
+            background-color: #33c488;
+        }
+        .container{
+            display:grid;
+            margin:auto;
+            justify-content: center;
+            width: 100vw;
+        }
+        h2{
+            margin:auto;
+            margin-top:10vh;
+        }
+        form{
+            margin-top:10px;
+            width:50vw;
+        }
+
+        
+        
+    </style>
+
+    <div class="container">
+            <h2>Verification</h2>
+            <p>A verification passcode has been sent to {{email}}</p>
+            <p>Please enter the code as it appears in the email</p>
+            <form method="POST" action="/verify">        
+                <input name="passcode" placeholder="Enter the passcode..." type="text" required>
+                <input name="encoded" value="{{passcode}}" type="hidden" >
+                <input name="email" value="{{email}}" type="hidden">
+                <input name="password" value="{{password}}" type="hidden">
+                <button class="btn"> Verify </button>
+            </form>
+    </div>
+
+   
+
+{% endblock %}
