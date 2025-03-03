@@ -52,19 +52,22 @@ def signup_action():
 
     if request.method == 'GET':
         return render_template("index.html", signup=True)
+    
     data = request.form
     email = data['email']
     password = data['password']
     confirmation = data['password2']
-    passcode = validate_email_address(email)
-    if not passcode:
-        flash("Please enter a valid email")
+
+    if user_exists(email) == True:
+        flash("User already exists")
         return render_template("index.html", signup=True)
     if confirm_password(password, confirmation) == False:
         flash("Passwords do not match")
         return render_template("index.html", signup=True)
-    if user_exists(email) == True:
-        flash("User already exists")
+    
+    passcode = validate_email_address(email)
+    if not passcode:
+        flash("Please enter a valid email")
         return render_template("index.html", signup=True)
     passcode = encrypt(str(passcode))
     password = encrypt(str(password))

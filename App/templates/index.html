@@ -39,7 +39,16 @@
             margin:auto;
             margin-top: 20px;
         }
-        
+        #loadingSection{
+            margin-top: 30vh;
+            width:100%;
+        }
+        #cancelBtn{
+            background-color: #e31934;
+            justify-content: center;
+            width:50%;
+            margin:0 auto;
+        }
         
     </style>
 
@@ -60,11 +69,14 @@
         <div id="signupSection" class="hidden">
             <h2>Sign up</h2>
             <form method="POST" action="/signup">        
-                <input type="text" name="email" placeholder="Enter email..." required>
-                <input type="text" name="password" placeholder="Enter password..." required>
-                <input type="text" name="password2" placeholder="Confirm password..." required>
-                <button class="btn"> Sign Up </button>
+                <input id="signup-email" type="text" name="email" placeholder="Enter email..." required>
+                <input id="signup-password" type="text" name="password" placeholder="Enter password..." required>
+                <input id="signup-password2" type="text" name="password2" placeholder="Confirm password..." required>
+                <button id="signup-btn" class="btn" onclick="showLoading()"> Sign Up </button>
             </form>
+            <div id="loading" class="progress hidden">
+                <div class="indeterminate"></div>
+            </div>
             <div class="switch">
                 <p>Already have an account?</p>
                 <button onclick="showLogin()" class="btn">Login!</button>
@@ -81,6 +93,10 @@
     <script>
         const login = document.getElementById("loginSection");
         const signup = document.getElementById("signupSection");
+        const loading = document.getElementById("loading");
+        const guestBtn = document.getElementById("guestBtn");
+        const signupBtn = document.getElementById("signup-btn");
+        
 
         function showLogin(){
             signup.classList.add("hidden");
@@ -89,12 +105,30 @@
         function showSignup(){
             login.classList.add("hidden");
             signup.classList.remove("hidden");
+            signupBtn.classList.remove("hidden");
+            loading.classList.add("hidden");
         }
+        function showLoading(){
+            const email = document.getElementById("signup-email").value;
+            const password = document.getElementById("signup-password").value;
+            const password2 = document.getElementById("signup-password2").value;
+            if(email == "" || password == "" || password2 == ""){
+                return;
+            }
+            signupBtn.classList.add("hidden");
+            loading.classList.remove("hidden");
+        }
+        window.addEventListener("pageshow", function(event) {
+            if (event.persisted) {
+                signupBtn.classList.remove("hidden");
+                loading.classList.add("hidden");
+            }
+        });
 
         if(signupRequest){
             showSignup();
         }
-        
+
     </script>
 
 {% endblock %}
