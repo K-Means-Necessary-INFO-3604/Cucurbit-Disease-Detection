@@ -6,41 +6,43 @@
 {% block content %}
     
     <style>
+        body{
+            background-color: #3c6a50;
+            color:white;
+        }
         .set{
             display:flex;
-            flex-wrap: wrap;
-            width:80vw;
-            margin:0 auto;
+            overflow-x: auto;
+            gap:10px;
         }
         .card{
             margin-top:5vh;
             width:40%;
-            margin-left:10px;
-            cursor:pointer
+            cursor:pointer;
+            color:black;
+            flex-shrink: 0;
         }
         .date-header{
             margin-top: 10vh;
         }
         .image{
-            min-height: 100px;
-            max-height: 200px;
+            min-height:100px;
+            max-height:200px;
+            object-fit: contain;
+            object-position: center;
         }
         #selected_img{
-            width:50vw;
-            height:50vh
+            height:50vh;
+            object-fit:contain;
         }
         .hidden{
             display:none;
         }
         #info{
-            display: flex;
-            flex-wrap: wrap;
-        }
-        #info p{
-            margin-left: 5vw;
+            display: grid;
         }
         #header-2{
-            display:inline-flex;
+            display:flex;
         }
         #header-2 p{
             margin-left:2vw;
@@ -60,10 +62,10 @@
                     {% if upload.date == date %}
                             <div class="card" onclick="selectUpload('{{upload.id}}')">
                                 <div class="card-image">
-                                    <img src="" data-id="{{upload.id}}">
+                                    <img class="image" src="" data-id="{{upload.id}}">
                                 </div>
                                 <div class="card-content">
-                                    <p> Severity - {{upload.severity}} </p>
+                                    <p> Severity - {{upload.severity}} %</p>
                                     <p> Type - {{upload.disease_type}} </p>
                                     <p> Actions - {{upload.actions}} </p>
                                 </div>
@@ -129,7 +131,7 @@
                     date.innerText = `${dateExtract.toISOString().split('T')[0]}`;
                     selected_id.innerText = `Upload id - ${data.id}`;
                     img.src = `data:image/jpeg;base64,${data.image}`;
-                    severity.innerText = `Severity - ${data.severity}`;
+                    severity.innerText = `Severity - ${data.severity} %`;
                     type.innerText = `Disease type - ${data.type}`;
                     actions.innerText = `Actions - ${data.actions}`;
                 }
