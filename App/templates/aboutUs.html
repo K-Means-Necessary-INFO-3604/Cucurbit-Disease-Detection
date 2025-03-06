@@ -6,23 +6,22 @@
 {% block content %}
     
     <style>
-
+        
         .set{
             display:flex;
         }
         .card{
             margin-left:5px;
             width:30vw;
-            height:350px;
+            height:300px;
         }
         .card-image{
-            height:300px;
+            height:250px;
             width:100%;
         }
         img{
             height:100%;
-            width: 100%;
-            object-fit:cover;
+            object-fit:contain;
         }
         .desciption{
             margin-top: 100px;
@@ -38,7 +37,6 @@
 
     <h2>About Us</h2>
 
-    <div class="row">
         <div class="set">
             <div class="card">
                 <div class="card-image">
@@ -56,6 +54,8 @@
                         Elijah Lewis
                     </div>
             </div>
+        </div>
+        <div class="set">
             <div class="card">
                 <div class="card-image">
                     <img src="/static/images/annika.jpg">
@@ -64,8 +64,15 @@
                     Annika Boodoosingh
                 </div>
             </div>
+            <div class="card">
+                <div class="card-image">
+                    <img src="/static/images/vijay.jpg">
+                </div>
+                <div class="name">
+                    Dr. Vijayanandh Rajamanickam
+                </div>
+            </div>
         </div>
-    </div>
     <div class="description">
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum egestas eros id dolor sollicitudin hendrerit. Aliquam tincidunt, tellus at tincidunt fringilla, erat urna malesuada tortor, id sodales lorem ante in tellus. Ut non euismod nisi. Pellentesque ornare turpis quam, eu pharetra dui ultrices ut. Mauris iaculis diam eu lectus auctor, eu ornare eros venenatis. Aenean at purus sem. Vivamus tempor faucibus augue nec interdum.</p>
         <p>Pellentesque at metus sit amet felis imperdiet dignissim in eu metus. Maecenas eu pulvinar nibh. Nunc et metus sit amet magna malesuada ullamcorper. Vivamus eu ultricies magna. Phasellus vel libero eu tortor consectetur aliquam a placerat massa. Fusce tempor ipsum vel metus tempor interdum. Nam scelerisque dolor et mattis egestas. Sed nec orci sit amet lorem lobortis gravida nec at orci. Curabitur eu auctor libero, vitae aliquet ipsum. Integer feugiat quam sed congue laoreet. Aliquam pretium lectus id tortor auctor dignissim. Sed aliquam at sapien id euismod. Pellentesque molestie ultrices hendrerit.</p>
