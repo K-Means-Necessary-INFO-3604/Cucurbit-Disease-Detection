@@ -1,7 +1,4 @@
 import os
-from flask_mail import Mail
-
-mail = Mail()
 
 def load_config(app, overrides):
     if os.path.exists(os.path.join('./App', 'custom_config.py')):
@@ -18,16 +15,6 @@ def load_config(app, overrides):
     app.config["JWT_COOKIE_SECURE"] = True
     app.config["JWT_COOKIE_CSRF_PROTECT"] = False
     app.config['FLASK_ADMIN_SWATCH'] = 'darkly'
-    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-    app.config['MAIL_PORT'] = 465
-    app.config['MAIL_USE_SSL'] = True
-    app.config['MAIL_USERNAME'] = os.environ['SENDER']
-    app.config['MAIL_PASSWORD'] = os.environ['APP_PASS']
-    app.config['MAIL_DEFAULT_SENDER'] = os.environ['SENDER']
     
-    mail.init_app(app)
     for key in overrides:
         app.config[key] = overrides[key]
-        
-def get_mail():
-    return mail

@@ -63,7 +63,8 @@
       "portsAttributes": {
           "8080": {
               "label": "server",
-              "protocol": "http"
+              "protocol": "http",
+              "onAutoForward": "openBrowser"
           }
       }
     // 👇 Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
