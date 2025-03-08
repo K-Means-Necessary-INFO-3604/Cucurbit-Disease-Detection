@@ -7,6 +7,7 @@ import json
 from email_validator import validate_email, EmailNotValidError
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.mime.image import MIMEImage
 from base64 import urlsafe_b64encode
 from flask import render_template
 
@@ -37,14 +38,20 @@ def get_gmail_service():
     service = build('gmail', 'v1', credentials=credentials)
     return service
 
-def send_email(service, email, subject, body):
+def send_email(email, subject, body):
     try:
+        service = get_gmail_service()
         msg = MIMEMultipart()
         msg['To'] = email
         msg['From'] = 'me'
         msg['Subject'] = subject
         msg.attach(MIMEText(body, 'html'))
-
+        with open("App/static/images/PhytoGuard.jpg", "rb") as logo:
+            image_binary = logo.read()
+            image = MIMEImage(image_binary)
+            image.add_header("Content-ID", "<logo>")
+            image.add_header("Content-Disposition", "inline", filename="PhytoGuard.jpg")
+            msg.attach(image)
         raw_message = urlsafe_b64encode(msg.as_bytes()).decode()
         service.users().messages().send(userId='me', body={'raw': raw_message}).execute()
         print("Message sent successfully!")
@@ -61,11 +68,9 @@ def validate_email_syntax(email):
 
 def send_verification(email):
     passcode = random.randrange(100000, 999999)
-    body = render_template("verification.html", passcode=passcode)
-    
-    try:
-        service = get_gmail_service()
-        send_email(service, email, "Email Verification", body)
+    try:  
+        body = render_template("verification.html", passcode=passcode)
+        send_email(email, "Email Verification", body)
         return passcode 
     except Exception as e:
         print(f"An error occurred: {e}")
