@@ -18,3 +18,13 @@ gevent==22.10.2
 Flask-Admin==1.6.1
 opencv-python-headless
 pytz
+Flask-Mail
+email-validator
+cryptography
+google-auth 
+google-auth-oauthlib 
+google-auth-httplib2 
+google-auth 
+google-auth-oauthlib 
+google-auth-httplib2 
+google-api-python-client

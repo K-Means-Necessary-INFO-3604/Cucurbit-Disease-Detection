@@ -6,7 +6,6 @@ from App.models import User
 from App.main import create_app
 from App.controllers import ( create_user, get_all_users_json, get_all_users, initialize )
 
-
 # This commands file allow you to create convenient CLI commands for testing controllers
 
 app = create_app()

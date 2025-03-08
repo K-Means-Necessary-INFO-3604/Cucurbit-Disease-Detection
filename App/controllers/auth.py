@@ -1,6 +1,8 @@
-from flask_jwt_extended import create_access_token, jwt_required, JWTManager, get_jwt_identity, verify_jwt_in_request
-
+from flask_jwt_extended import create_access_token, JWTManager, get_jwt_identity, verify_jwt_in_request
 from App.models import User
+from App.controllers.mail import validate_email_syntax, send_verification
+
+
 
 def login(email, password):
   user = User.query.filter_by(email=email).first()
@@ -8,7 +10,17 @@ def login(email, password):
     return create_access_token(identity=email)
   return None
 
+def validate_email_address(email):
+  if not validate_email_syntax(email):
+    return None
+  passcode = send_verification(email)
+  if not passcode:
+    return None
+  return passcode
+  
 
+  
+  
 def setup_jwt(app):
   jwt = JWTManager(app)
 
