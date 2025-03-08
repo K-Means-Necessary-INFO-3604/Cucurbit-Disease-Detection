@@ -11,9 +11,9 @@ from App.controllers import (
     confirm_password,
     get_all_users,
     validate_email_address,
-    encrypt,
-    decrypt
 )
+
+from App.encryption import encrypt, decrypt
 
 auth_views = Blueprint('auth_views', __name__, template_folder='../templates')
 

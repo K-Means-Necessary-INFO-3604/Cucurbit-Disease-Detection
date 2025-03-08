@@ -1,10 +1,8 @@
 from flask_jwt_extended import create_access_token, JWTManager, get_jwt_identity, verify_jwt_in_request
 from App.models import User
 from App.controllers.mail import validate_email_syntax, send_verification
-from cryptography.fernet import Fernet
 
-key = Fernet.generate_key()
-cipher_suite = Fernet(key)
+
 
 def login(email, password):
   user = User.query.filter_by(email=email).first()
@@ -20,14 +18,7 @@ def validate_email_address(email):
     return None
   return passcode
   
-def encrypt(data):
-    encoded_data = data.encode("utf-8")
-    encrypted_data = cipher_suite.encrypt(encoded_data)
-    return encrypted_data
 
-def decrypt(encrypted_data):
-    decrypted_data = cipher_suite.decrypt(encrypted_data)
-    return decrypted_data.decode("utf-8")
   
   
 def setup_jwt(app):

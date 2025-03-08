@@ -1,7 +1,6 @@
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from google.auth.transport.requests import Request
-import os
 import random
 import json
 from email_validator import validate_email, EmailNotValidError
@@ -10,13 +9,21 @@ from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from base64 import urlsafe_b64encode
 from flask import render_template
+from App.encryption import decrypt, encrypt
 
 SCOPES = ['https://www.googleapis.com/auth/gmail.send']
 
 
 def get_credentials():
     
-    token_string = os.environ.get("TOKEN")
+    try:
+        with open("encrypted_token.txt", "rb") as token_file:
+            encrypted_token = token_file.read()
+            token_string = decrypt(encrypted_token)
+    except Exception as e:
+        print(e)
+        return None
+    
     credentials = None
     if token_string:
         token = json.loads(token_string)
@@ -25,8 +32,9 @@ def get_credentials():
     if not credentials or not credentials.valid:
         if credentials and credentials.expired and credentials.refresh_token:
             credentials.refresh(Request())
-            with open(".env", 'w') as env:
-                env.write(f"TOKEN={credentials.to_json()}")
+            with open("encrypted_token.txt", 'wb') as token_file:
+                encrypted_token = encrypt(credentials.to_json())
+                token_file.write(encrypted_token)
         else:
             return None
     return credentials
