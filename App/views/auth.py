@@ -11,6 +11,7 @@ from App.controllers import (
     confirm_password,
     get_all_users,
     validate_email_address,
+    run_flow,
 )
 
 from App.encryption import encrypt, decrypt
@@ -139,3 +140,11 @@ def logout_api():
     response = jsonify(message="Logged Out!")
     unset_jwt_cookies(response)
     return response
+
+@auth_views.route('/OAuthFlow', methods=['GET'])
+@jwt_required()
+def initiate_OAuth_flow():
+    if current_user.email == "admin":
+        status = run_flow()
+        return jsonify(message=status)
+    return redirect("/")

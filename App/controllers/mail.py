@@ -3,12 +3,13 @@ from googleapiclient.discovery import build
 from google.auth.transport.requests import Request
 import random
 import json
+from google_auth_oauthlib.flow import InstalledAppFlow
 from email_validator import validate_email, EmailNotValidError
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from base64 import urlsafe_b64encode
-from flask import render_template
+from flask import render_template, request
 from App.encryption import decrypt, encrypt
 
 SCOPES = ['https://www.googleapis.com/auth/gmail.send']
@@ -20,6 +21,7 @@ def get_credentials():
         with open("encrypted_token.txt", "rb") as token_file:
             encrypted_token = token_file.read()
             token_string = decrypt(encrypted_token)
+            print(token_string)
     except Exception as e:
         print(e)
         return None
@@ -28,7 +30,7 @@ def get_credentials():
     if token_string:
         token = json.loads(token_string)
         credentials = Credentials.from_authorized_user_info(token, SCOPES)
-    
+
     if not credentials or not credentials.valid:
         if credentials and credentials.expired and credentials.refresh_token:
             credentials.refresh(Request())
@@ -83,3 +85,28 @@ def send_verification(email):
     except Exception as e:
         print(f"An error occurred: {e}")
         return None
+    
+def run_flow():
+    try:
+        with open("encrypted_credentials.txt", 'rb') as credentials_file:
+            data = credentials_file.read()
+            decrypted_credentials = decrypt(data)
+        if decrypted_credentials:
+            creds = json.loads(decrypted_credentials)
+        
+        flow = InstalledAppFlow.from_client_config(
+            creds,  
+            scopes=SCOPES,
+            redirect_uri="https://phytoguard.onrender.com"
+        )
+        flow.fetch_token(authorization_response=request.url, access_type="offline", prompt="consent")
+        creds = flow.credentials
+        #creds = flow.run_local_server(port=8080, access_type="offline", prompt="consent")
+        print(creds.to_json())
+        with open("encrypted_token.txt", 'wb') as token_file:
+            encrypted_token = encrypt(creds.to_json())
+            token_file.write(encrypted_token)
+        return "Token Successfully updated"
+    except Exception as e:
+        print(e)
+        return "Error perrforming OAuth flow"
