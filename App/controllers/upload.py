@@ -6,6 +6,11 @@ from datetime import datetime
 import pytz 
 import numpy as np 
 from math import ceil 
+import random
+import numpy as np
+import io
+from PIL import Image
+from rembg import remove, new_session
 
 allowed = {'jpg', 'jpeg', 'png'} 
 
@@ -60,7 +65,8 @@ def encode_image(image):
     encoded_img = base64.b64encode(image).decode("utf-8")  
     return f"data:image/jpeg;base64,{encoded_img}" 
 
-def calculate_severity(binary_data): 
+def calculate_severity(binary_data):
+    binary_data = remove_background(binary_data)
     nparr = np.frombuffer(binary_data, np.uint8) 
     image = cv2.imdecode(nparr, cv2.IMREAD_COLOR) 
     if image is None: 
@@ -105,3 +111,24 @@ def calculate_severity(binary_data):
         
         severity_ratio = ceil(severity_ratio * 1000) / 1000  
     return severity_ratio
+
+def remove_background(binary_data):
+    """Removes background from an image and returns it as binary data."""
+
+    random.seed(0)
+    np.random.seed(0)
+    session = new_session("u2net", providers=["CUDAExecutionProvider"])
+
+    image_io = io.BytesIO(binary_data)
+    
+    with Image.open(image_io).convert("RGBA") as img:
+        img_array = np.array(img)
+    
+    image_without_background = remove(img_array, session=session)
+    
+    #Convert back to BytesIO and return as binary data
+    image_io = io.BytesIO()
+    Image.fromarray(image_without_background).save(image_io, format="PNG")
+    image_io.seek(0)
+
+    return image_io.read()
