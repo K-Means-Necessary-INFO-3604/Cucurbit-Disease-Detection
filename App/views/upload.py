@@ -7,7 +7,7 @@ import base64
 
 upload_views = Blueprint('upload_views', __name__, template_folder='../templates')
 
-@upload_views.route('/uploadPage', methods=['GET'])
+@upload_views.route('/upload-page', methods=['GET'])
 def upload_page():
     return render_template('upload.html')
 
@@ -27,7 +27,7 @@ def upload_file():
     flash("Invalid file")
     return render_template("upload.html")
 
-@upload_views.route('/uploadGuest', methods=['POST'])
+@upload_views.route('/upload-guest', methods=['POST'])
 def upload_file_guest(): 
     if 'file' not in request.files:
         flash("No file")
@@ -53,7 +53,7 @@ def get_image():
         return jsonify({"image" : encoded_image})
     return jsonify({"error": "Invalid image selected"})
 
-@upload_views.route("/api/uploadedImage/<int:id>", methods=['GET'])
+@upload_views.route("/api/uploaded-image/<int:id>", methods=['GET'])
 def get_uploaded_image(id):
     upload = get_upload(id)
     if not upload:
@@ -68,7 +68,7 @@ def display_uploads():
     uploads = get_all_uploads_json()
     return jsonify(uploads)
 
-@upload_views.route("/historyPage", methods=['GET'])
+@upload_views.route("/history-page", methods=['GET'])
 @jwt_required()
 def history_page():
     uploads = get_uploads_by_date(current_user.id)

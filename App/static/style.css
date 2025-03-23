@@ -1,3 +1,14 @@
 html {
     padding: 0;
 }
+
+.btn{
+    background-color: white;
+    color: black;
+    width: max-content;
+}
+
+.btn:hover{
+    background-color: black;
+    color: white;
+}

@@ -12,7 +12,7 @@
             background-size: cover;
             background-position: center center;
             background-repeat: no-repeat;
-            height: 100vh;
+            height: 100svh;
             width: 100%;
         }
         .uploadImage{
@@ -26,31 +26,52 @@
         .uploadForm{
             margin-top: 10vh;
             color:white;
+            display:flex;
+            flex-direction:column;
+            justify-content:center;
+            gap:2vh;
+        }
+        .btn{
+            margin: auto;
+        }
+        #image, #submit{
+            display:none;
+            display:none;
         }
     </style>
+
     {% if is_authenticated %}
+
         <form class="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
-            <input id="image" type="file" name="file" onchange="showImage()" required>
-            <p>
-                <button class="btn"> Submit </button>
-            </p>
-        </form>
+            <label for="image" id="image-button" class="btn pulse"> Choose File </label>
+            <input id="image" type="file" name="file" onchange="showImage()" accept="image/png, image/jpeg, image/jpeg" required>
+            <img id="upload" class="uploadImage">
+
+            <button id="submit" class="btn pulse"> Submit </button>
+        </form> 
+
     {% else %}
-        <form class="uploadForm" action="/uploadGuest" method="POST" enctype="multipart/form-data">
-            <input id="image" type="file" name="file" onchange="showImage()" required>
-            <p>
-                <button class="btn"> Submit </button>
-            </p>
-        </form>
+
+        <form class="uploadForm" action="/upload-guest" method="POST" enctype="multipart/form-data">
+            <label for="image" id="image-button" class="btn pulse"> Choose File </label>
+            <input id="image" type="file" name="file" onchange="showImage()" accept="image/png, image/jpeg, image/jpeg" required>
+            <img id="upload" class="uploadImage">
+
+            <button id="submit" class="btn pulse"> Submit </button>
+        </form> 
+
     {% endif %}
-    <img id="upload" class="uploadImage">
 
 
     <script>
+        
         function showImage(){
             const input = document.getElementById("image");
             const img = input.files[0];
             const display = document.getElementById("upload");
+            const submit = document.getElementById("submit");
+            const inputBtn = document.getElementById("image-button")
+
             const formData = new FormData();
             formData.append("file", img);
             
@@ -63,10 +84,14 @@
                 if(data.error){
                     M.toast({'html' : data.error});
                     display.src = "";
-                    image.value = "";
+                    input.value = "";
+                    submit.style.display = "none";
+                    inputBtn.classList.add("pulse");
                 }
                 if(data.image){
                     display.src = `data:image/jpeg;base64,${data.image}`
+                    submit.style.display = "inline";
+                    inputBtn.classList.remove("pulse");
                 }
             })
         }

@@ -41,10 +41,11 @@
         #info{
             display: grid;
         }
-        #header-2{
+        #selected-header{
             display:flex;
+            margin-top:5vh;
         }
-        #header-2 p{
+        #selected-header p{
             margin-left:2vw;
         }
         #back-to-history{
@@ -77,8 +78,7 @@
     </div>
 
     <div id="selected" class="hidden">
-        <h2 id="selected_date"></h2>
-        <div id="header-2">
+        <div id="selected-header">
             <button id="back-to-history" class="btn" onclick="showUploads()"> <i class="material-icons">keyboard_backspace</i> Back to history</button>
             <p id="selected_id"></p>
         </div>
@@ -87,6 +87,7 @@
             <p id="severity"></p>
             <p id="type"></p>
             <p id="actions"></p>
+            <p id="selected_date"> </p>
         </div>
     </div>
 
@@ -104,7 +105,7 @@
         
         uploads.forEach((upload) => {
             const uploadId = upload.getAttribute('data-id');
-            fetch(`/api/uploadedImage/${uploadId}`)
+            fetch(`/api/uploaded-image/${uploadId}`)
             .then(response => response.json())
             .then(data => {
                 if(data.error){
@@ -118,7 +119,7 @@
         });
 
         function selectUpload(updated){
-            fetch(`/api/uploadedImage/${updated}`)
+            fetch(`/api/uploaded-image/${updated}`)
             .then(response => response.json())
             .then(data => {
                 if(data.error){
@@ -128,7 +129,7 @@
                     let dateExtract = new Date(data.date)
                     selected.classList.remove("hidden");
                     section.classList.add("hidden");
-                    date.innerText = `${dateExtract.toISOString().split('T')[0]}`;
+                    date.innerText = `Date - ${dateExtract.toISOString().split('T')[0]}`;
                     selected_id.innerText = `Upload id - ${data.id}`;
                     img.src = `data:image/jpeg;base64,${data.image}`;
                     severity.innerText = `Severity - ${data.severity} %`;

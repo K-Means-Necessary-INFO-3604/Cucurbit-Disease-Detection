@@ -17,10 +17,8 @@
             color:white;
             height:100vh;
             width:100vw;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
         }
-        img{
+        #uploaded-image{
             display:flex;
             margin:0 auto;
             max-height:50%;
@@ -42,13 +40,17 @@
             margin-top: 5svh;
             margin-left: 5px;
         }
-        #header-2{
+        #icons{
             margin-top: 10px;
             margin-left: 5px;
             display:inline-flex;
         }
         #back-to-upload{
             display: inline-flex;
+        }
+        #header{
+            display:flex;
+            justify-content:center;
         }
         .imageSection{
             width:100vw;
@@ -69,13 +71,15 @@
     <div class="container">
     {% if upload %}
     <div style="display:flex">
-        <h2 style="margin:0; padding:0;">Results: </h2>
+        <div id="icons">
+            <a id="back-to-upload" class="btn" href="/upload-page"> <i class="material-icons">keyboard_backspace</i> Back to upload</a>
+        </div>
         <i style="cursor: pointer; font-size: 50px; margin-left: auto; margin-right: 1vw;"onclick="scrollDown()" class="material-symbols-outlined">arrow_circle_down</i>
     </div>
-    <div id="header-2">
-        <a id="back-to-upload" class="btn" href="/uploadPage"> <i class="material-icons">keyboard_backspace</i> Back to upload</a>
+    <div id="header">
+        <h2 style="margin:auto;">Results: </h2>
     </div>
-        <blockquote>Scroll to see the uploaded image</blockquote>
+    <blockquote>Scroll to see the uploaded image</blockquote>
     <div class="results">
 
         <h5> Disease type: </h5>
@@ -112,7 +116,7 @@
         {% endif %}
         </div>
         {% if image %}
-            <img src="{{image}}" class="uploadImage">
+            <img id="uploaded-image" src="{{image}}" class="uploadImage">
         {% endif %}
     </div>
     {% endif %}
