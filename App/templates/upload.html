@@ -16,6 +16,7 @@
             width: 100%;
         }
         .uploadImage{
+            border:2px solid white;
             width: 50vw; 
             height:50vh; 
             background-color: rgb(43, 56, 56); 
@@ -34,10 +35,16 @@
         .btn{
             margin: auto;
         }
-        #image, #submit{
-            display:none;
+        #image, #submit {
             display:none;
         }
+        .progress{
+            display:none;
+            margin:auto;
+            width:50vw;
+        }
+
+
     </style>
 
     {% if is_authenticated %}
@@ -46,8 +53,10 @@
             <label for="image" id="image-button" class="btn pulse"> Choose File </label>
             <input id="image" type="file" name="file" onchange="showImage()" accept="image/png, image/jpeg, image/jpeg" required>
             <img id="upload" class="uploadImage">
-
-            <button id="submit" class="btn pulse"> Submit </button>
+            <div class="progress black">
+                <div class="indeterminate white"></div>
+            </div>
+            <button id="submit" class="btn pulse" onclick="onSubmission()"> Submit </button>
         </form> 
 
     {% else %}
@@ -56,20 +65,23 @@
             <label for="image" id="image-button" class="btn pulse"> Choose File </label>
             <input id="image" type="file" name="file" onchange="showImage()" accept="image/png, image/jpeg, image/jpeg" required>
             <img id="upload" class="uploadImage">
-
-            <button id="submit" class="btn pulse"> Submit </button>
+            <div class="progress black">
+                <div class="indeterminate white"></div>
+            </div>
+            <button id="submit" class="btn pulse" onclick="onSubmission()"> Submit </button>
         </form> 
 
     {% endif %}
 
 
     <script>
-        
+        const submit = document.getElementById("submit");
+        const loaders = document.querySelectorAll(".progress")
+
         function showImage(){
             const input = document.getElementById("image");
             const img = input.files[0];
             const display = document.getElementById("upload");
-            const submit = document.getElementById("submit");
             const inputBtn = document.getElementById("image-button")
 
             const formData = new FormData();
@@ -94,6 +106,13 @@
                     inputBtn.classList.remove("pulse");
                 }
             })
+        }
+
+        function onSubmission(){
+            submit.style.display = "none";
+            loaders.forEach( (loader) => {
+                loader.style.display = "flex";
+            });
         }
     </script>
 {% endblock %}

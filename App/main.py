@@ -37,7 +37,6 @@ def create_app(overrides={}):
         return render_template('401.html', error=error), 401
     @jwt.expired_token_loader
     def custom_expired_response(dict, payload):
-        flash("Please Login")
         return redirect("login-page")
     app.app_context().push()
     return app
