@@ -91,28 +91,33 @@ def history_page():
             exists = False
     return render_template("history.html", uploads=uploads, dates=dates)
 
+
+    
 @upload_views.route("/api/get-weather/<string:ip>", methods=['GET'])
 def get_weather(ip):
-    print("Address: ", ip)
     latlng = get_lat_lng(ip)
     if latlng:
         lat = latlng[0]
         lon = latlng[1]
-        data = requests.get(f"https://www.meteosource.com/api/v1/free/point?lat={lat}&lon={lon}&sections=daily&language=en&units=auto&key={WEATHER_KEY}")
-        data = data.json()
-        alldays = data.get('daily').get('data')
-        if alldays is None:
+        try:
+            data = requests.get(f"https://www.meteosource.com/api/v1/free/point?lat={lat}&lon={lon}&sections=daily&language=en&units=auto&key={WEATHER_KEY}")
+            data = data.json()
+            alldays = data.get('daily').get('data')
+            if alldays is None:
+                return jsonify(error="Error retrieving weather data")
+            daysData = []
+            alldays = alldays[:3]
+            for day in alldays:
+                temp = day.get('all_day')
+                if temp:
+                    temp = temp.get('temperature')
+                year, month, day1 = day.get('day').split('-')
+                date = day1 + "-" + month + "-" + year 
+                weather = day.get('weather').replace('_', ' ').title()
+                daysData.append({"day": date, "weather" : weather, "temperature": temp})
+            return jsonify(days=daysData)
+        except Exception as e:
+            print(e)
             return jsonify(error="Error retrieving weather data")
-        daysData = []
-        alldays = alldays[:3]
-        for day in alldays:
-            temp = day.get('all_day')
-            if temp:
-                temp = temp.get('temperature')
-            year, month, day1 = day.get('day').split('-')
-            date = day1 + "-" + month + "-" + year 
-            weather = day.get('weather').replace('_', ' ').title()
-            daysData.append({"day": date, "weather" : weather, "temperature": temp})
-        return jsonify(days=daysData)
     else:
         return jsonify(error="Error retrieving geolocation")

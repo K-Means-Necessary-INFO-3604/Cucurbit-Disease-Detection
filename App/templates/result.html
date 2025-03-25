@@ -81,6 +81,7 @@
         #switch-btns{
             display:flex;
             justify-content:center;
+            margin-top: 1vh;
         }
         #show-weather{
             display:none;
@@ -90,9 +91,20 @@
         }
         #weather{
             display:none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        #days-container{
+            display:flex;
             justify-content: center;
             flex-wrap: wrap;
             gap:15px;
+        }
+        #disclaimer{
+            margin-top:2vh;
+            text-align: center;
+            color:grey;
         }
         .day{
             background-color: transparent;
@@ -101,6 +113,10 @@
             text-align:center;
             min-width: 10vw;
             border: 1px dotted grey;
+        }
+        #loader{
+            display:none;
+            max-width:50%;
         }
         
     </style>
@@ -128,17 +144,24 @@
             
         </div>
         <div id="weather" class="animate__animated animate__fadeIn">
-            <div class="day card">
-                
-            </div>
-            <div class="day card">
+            <div id="days-container">
+                <div class="day card">
+                    
+                </div>
+                <div class="day card">
 
-            </div>
-            <div class="day card">
+                </div>
+                <div class="day card">
 
+                </div>
             </div>
+            <p id= "disclaimer"> Weather forecast accuracy may be affected if you are using a VPN or any tool that masks your IP address </p>
         </div>
         <div id="switch-btns">
+            <button id="load-weather" class="btn" onclick="loadWeather()"> View Weather Report </button>
+            <div id="loader" class="progress black">
+                <div class="indeterminate white"></div>
+            </div>
             <button id="show-weather" class="btn" onclick="showWeather()"> View Weather Report </button>
             <button id="show-analysis" class="btn" onclick="showAnalysis()"> View Analysis </button>
         </div>
@@ -209,35 +232,60 @@
         const weatherBtn = document.getElementById("show-weather");
         const weather = document.getElementById("weather");
         const analysisBtn = document.getElementById("show-analysis");
+        const apiCaller = document.getElementById("load-weather");
         const results = document.getElementById("results");
-        const days = document.querySelectorAll(".day")
+        const days = document.querySelectorAll(".day");
+        const disclaimer = document.getElementById("disclaimer");
+        const loader = document.getElementById("loader");
 
-        fetch("https://api.ipgeolocation.io/getip")
-        .then(response => response.json())
-        .then(data => {
-            if(data.ip){
-                get_geoLocation(data.ip)
-                weatherBtn.style.display = "flex";
+        function loadWeather(){
+            apiCaller.style.display = "none";
+            loader.style.display = "flex";
+            fetch("https://api.ipgeolocation.io/getip")
+            .then(response => response.json())
+            .then(data => {
+                if(data.ip){
+                    getWeather(data.ip);
+                }
+                else{
+                    loader.style.display = "none";
+                    M.toast({'html': "Error getting IP address"});
+                    disclaimer.innerText = "Experiencing some issues, please try again later";
+                    disclaimer.style.color = "#de3e4f";
+                    showWeather();
+                }
+            })
+            .catch(error => {
+                loader.style.display = "none";
+                M.toast({'html': "Network error, please try again later"});
+                disclaimer.innerText = "Experiencing some issues, please try again later";
+                disclaimer.style.color = "#de3e4f";
+                showAnalysis();
+            });
+        }
 
-            }
-        });
 
-        function get_geoLocation(address){
+        function getWeather(address){
             fetch(`/api/get-weather/${address}`)
                 .then(response => response.json())
                 .then(data => {
+                    loader.style.display = "none";
                     if(data.days){
-                        weatherBtn.style.display = "flex";
                         days[0].innerHTML = `<b>${data.days[0].day} </b> 
                                              <p>${data.days[0].weather} </p>
                                              <p>${data.days[0].temperature} °C</p>`;
                         days[1].innerHTML = `<b>${data.days[1].day} </b> 
                                              <p>${data.days[1].weather} </p>
-                                             <p>${data.days[1].temperature} °C</p>`
+                                             <p>${data.days[1].temperature} °C</p>`;
                         days[2].innerHTML = `<b>${data.days[2].day} </b> 
                                              <p>${data.days[2].weather} </p>
-                                             <p>${data.days[2].temperature} °C</p>`
+                                             <p>${data.days[2].temperature} °C</p>`;
                     }
+                    else if(data.error){
+                        disclaimer.innerText = "Sorry there was an error loading weather data. Please try again tomorrow";
+                        disclaimer.style.color = "#de3e4f";
+                    }
+                    showWeather()
                 });
         }
 
