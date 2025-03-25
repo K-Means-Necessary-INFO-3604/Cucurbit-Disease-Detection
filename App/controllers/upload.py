@@ -11,6 +11,7 @@ import numpy as np
 import io
 from PIL import Image
 from rembg import remove, new_session
+import geocoder
 
 allowed = {'jpg', 'jpeg', 'png'} 
 
@@ -132,3 +133,10 @@ def remove_background(binary_data):
     image_io.seek(0)
 
     return image_io.read()
+
+def get_lat_lng(address):
+    ip = geocoder.ip(address)
+    if ip.latlng:
+        return ip.latlng
+    else:
+        return None

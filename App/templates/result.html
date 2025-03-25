@@ -15,25 +15,28 @@
             background-color: #24374f;
             background-size: cover;
             color:white;
-            height:100vh;
+            min-height:100vh;
+            height:auto;
             width:100vw;
         }
         #uploaded-image{
             display:flex;
             margin:0 auto;
-            max-height:50%;
-            max-width:100%;
+            max-height:50vh;
+            max-width:80vw;
             object-fit: contain;
         }
-        .results{
-            display:grid;
+        #results{
+            display:flex;
+            flex-direction: column;
             justify-content: center;
+            align-items:center;
         }
-        .results h5{
+        #results h5{
             font-weight: bold;
             justify-self: center;
         }
-        .results p{
+        #results p{
             justify-self: center;
         }
         blockquote{
@@ -63,9 +66,10 @@
         }
         .imageSection{
             width:100vw;
-            height:100dvh;
+            min-height:100dvh;
+            height:auto;
             background-color: #3c6a50;
-            color:white
+            color:white;
         }
         .imageSection h2{
             margin-top: 0;
@@ -74,39 +78,78 @@
             display: flex;
             justify-content: center;
         }
+        #switch-btns{
+            display:flex;
+            justify-content:center;
+        }
+        #show-weather{
+            display:none;
+        }
+        #show-analysis{
+            display:none;
+        }
+        #weather{
+            display:none;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap:15px;
+        }
+        .day{
+            background-color: transparent;
+            color:white;
+            padding:10px;
+            text-align:center;
+            min-width: 10vw;
+            border: 1px dotted grey;
+        }
         
     </style>
     
     <div class="container">
-    {% if upload %}
-    <div style="display:flex">
-        <div id="icons">
-            <a id="back-to-upload" class="btn" href="/upload-page"> <i class="material-icons">keyboard_backspace</i> Back to upload</a>
+        {% if upload %}
+        <div style="display:flex">
+            <div id="icons">
+                <a id="back-to-upload" class="btn" href="/upload-page"> <i class="material-icons">keyboard_backspace</i> Back to upload</a>
+            </div>
+            <i style="margin-left: auto; margin-right: 1vw;" onclick="scrollDown()" class="material-symbols-outlined scroller">arrow_circle_down</i>
         </div>
-        <i style="margin-left: auto; margin-right: 1vw;" onclick="scrollDown()" class="material-symbols-outlined scroller">arrow_circle_down</i>
-    </div>
-    <div id="header">
-        <h2 style="margin:auto;">Results: </h2>
-    </div>
-    <blockquote>Scroll to see the uploaded image</blockquote>
-    <div class="results">
+        <div id="header">
+            <h2 style="margin:auto;">Results: </h2>
+        </div>
+        <blockquote>Scroll to see the uploaded image</blockquote>
+        <div id="results" class="animate__animated animate__fadeIn">
 
-        <h5> Disease type: </h5>
-        <p>{{upload.disease_type}}</p>
-        <h5> Severity: </h5>
-        <p>{{upload.severity}} %</p>
-        <h5> Remedial Actions: </h5>
-        <p>{{upload.actions}}</p>
-        
-    </div>
+            <h5> Disease type: </h5>
+            <p>{{upload.disease_type}}</p>
+            <h5> Severity: </h5>
+            <p>{{upload.severity}} %</p>
+            <h5> Remedial Actions: </h5>
+            <p>{{upload.actions}}</p>
+            
+        </div>
+        <div id="weather" class="animate__animated animate__fadeIn">
+            <div class="day card">
+                
+            </div>
+            <div class="day card">
 
-    {% else %}
-    <div>
-        <h2>Error </h2>
-        <p>Error displaying results</p>
-        <a class="btn" href="/"> Go Home </a>
-    </div>
-    {% endif %}
+            </div>
+            <div class="day card">
+
+            </div>
+        </div>
+        <div id="switch-btns">
+            <button id="show-weather" class="btn" onclick="showWeather()"> View Weather Report </button>
+            <button id="show-analysis" class="btn" onclick="showAnalysis()"> View Analysis </button>
+        </div>
+
+        {% else %}
+        <div>
+            <h2>Error </h2>
+            <p>Error displaying results</p>
+            <a class="btn" href="/"> Go Home </a>
+        </div>
+        {% endif %}
     </div>
 
     {% if upload %}
@@ -159,6 +202,61 @@
             });
         }
 
+    </script>
+
+
+    <script>
+        const weatherBtn = document.getElementById("show-weather");
+        const weather = document.getElementById("weather");
+        const analysisBtn = document.getElementById("show-analysis");
+        const results = document.getElementById("results");
+        const days = document.querySelectorAll(".day")
+
+        fetch("https://api.ipgeolocation.io/getip")
+        .then(response => response.json())
+        .then(data => {
+            if(data.ip){
+                get_geoLocation(data.ip)
+                weatherBtn.style.display = "flex";
+
+            }
+        });
+
+        function get_geoLocation(address){
+            fetch(`/api/get-weather/${address}`)
+                .then(response => response.json())
+                .then(data => {
+                    if(data.days){
+                        weatherBtn.style.display = "flex";
+                        days[0].innerHTML = `<b>${data.days[0].day} </b> 
+                                             <p>${data.days[0].weather} </p>
+                                             <p>${data.days[0].temperature} °C</p>`;
+                        days[1].innerHTML = `<b>${data.days[1].day} </b> 
+                                             <p>${data.days[1].weather} </p>
+                                             <p>${data.days[1].temperature} °C</p>`
+                        days[2].innerHTML = `<b>${data.days[2].day} </b> 
+                                             <p>${data.days[2].weather} </p>
+                                             <p>${data.days[2].temperature} °C</p>`
+                    }
+                });
+        }
+
+        function showWeather(){
+            weatherBtn.style.display = "none";
+            analysisBtn.style.display = "flex";
+            results.style.display = "none";
+            weather.style.display = "flex";
+
+        }
+
+        function showAnalysis(){
+            weatherBtn.style.display = "flex";
+            analysisBtn.style.display = "none";
+            weather.style.display = "none";
+            results.style.display = "flex";
+        }
+        
+        
     </script>
 
 {% endblock %}

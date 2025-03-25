@@ -1,11 +1,15 @@
 from flask import Blueprint, redirect, render_template, request, send_from_directory, jsonify, flash
-from App.controllers import validate_upload, encode_image, get_all_uploads_json, get_upload, get_uploads_by_date, upload_image, upload_guest
+from App.controllers import validate_upload, encode_image, get_all_uploads_json, get_upload, get_uploads_by_date, upload_image, upload_guest, get_lat_lng
 from werkzeug.utils import secure_filename
 from flask_jwt_extended import jwt_required, current_user
 import os
 import base64
+import requests
+
 
 upload_views = Blueprint('upload_views', __name__, template_folder='../templates')
+
+WEATHER_KEY = os.environ.get("WEATHER_KEY")
 
 @upload_views.route('/upload-page', methods=['GET'])
 def upload_page():
@@ -86,3 +90,29 @@ def history_page():
         else: 
             exists = False
     return render_template("history.html", uploads=uploads, dates=dates)
+
+@upload_views.route("/api/get-weather/<string:ip>", methods=['GET'])
+def get_weather(ip):
+    print("Address: ", ip)
+    latlng = get_lat_lng(ip)
+    if latlng:
+        lat = latlng[0]
+        lon = latlng[1]
+        data = requests.get(f"https://www.meteosource.com/api/v1/free/point?lat={lat}&lon={lon}&sections=daily&language=en&units=auto&key={WEATHER_KEY}")
+        data = data.json()
+        alldays = data.get('daily').get('data')
+        if alldays is None:
+            return jsonify(error="Error retrieving weather data")
+        daysData = []
+        alldays = alldays[:3]
+        for day in alldays:
+            temp = day.get('all_day')
+            if temp:
+                temp = temp.get('temperature')
+            year, month, day1 = day.get('day').split('-')
+            date = day1 + "-" + month + "-" + year 
+            weather = day.get('weather').replace('_', ' ').title()
+            daysData.append({"day": date, "weather" : weather, "temperature": temp})
+        return jsonify(days=daysData)
+    else:
+        return jsonify(error="Error retrieving geolocation")
