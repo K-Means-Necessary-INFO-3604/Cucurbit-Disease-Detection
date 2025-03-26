@@ -1,3 +1,4 @@
+from App.disease_recommendations import DiseaseRecommendations
 from App.models import Upload 
 from App.database import db 
 import cv2 
@@ -140,3 +141,30 @@ def get_lat_lng(address):
         return ip.latlng
     else:
         return None
+    
+def get_disease_videos(disease):
+    disease = disease.title()
+    print(disease)
+    
+    if disease == "Downy Mildew":
+        return DiseaseRecommendations.downy_mildew_videos()
+        
+    if disease == "Powdery Mildew":
+        return DiseaseRecommendations.powdery_mildew_videos()
+    
+    if disease == "Mosaic Disease":
+        return DiseaseRecommendations.mosaic_disease_videos()
+
+    if disease == "Bacterial Leaf Spot":
+        return DiseaseRecommendations.bacterial_leaf_spot_videos()
+
+    if disease == "Anthracnose":
+        return DiseaseRecommendations.anthracnose_videos()
+    
+    if disease == "Bacterial Wilt":
+        return DiseaseRecommendations.bacterial_wilt_videos()
+        
+    if disease == "Gummy Stem Blight":
+        return DiseaseRecommendations.gummy_stem_blight_videos()
+    
+    return None

@@ -1,11 +1,10 @@
 from flask import Blueprint, redirect, render_template, request, send_from_directory, jsonify, flash
-from App.controllers import validate_upload, encode_image, get_all_uploads_json, get_upload, get_uploads_by_date, upload_image, upload_guest, get_lat_lng
+from App.controllers import validate_upload, encode_image, get_all_uploads_json, get_upload, get_uploads_by_date, upload_image, upload_guest, get_lat_lng, get_disease_videos
 from werkzeug.utils import secure_filename
 from flask_jwt_extended import jwt_required, current_user
 import os
 import base64
 import requests
-
 
 upload_views = Blueprint('upload_views', __name__, template_folder='../templates')
 

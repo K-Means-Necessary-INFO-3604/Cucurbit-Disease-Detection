@@ -67,3 +67,53 @@ class DiseaseRecommendations:
             "Apply soil sterilization and a strict sanitation program for equipment and personnel should be implemented in protected culture."
         ]
 
+    @staticmethod
+    def downy_mildew_videos():
+        return [
+            "FzJNVAyRxdc",
+            "ONG9bIQ2N54",
+            "180JiG51UXs"
+        ]
+
+    @staticmethod
+    def powdery_mildew_videos():
+        return [
+            "UVMS-4h5rPk",
+            "IKnIerhxG4I"
+        ]
+
+    @staticmethod
+    def mosaic_disease_videos():
+        return [
+            "78HnUfTTQDE",
+            "eqmo0usK3i4",
+        ]
+
+    @staticmethod
+    def bacterial_leaf_spot_videos():
+        return [
+            "bBbU9dKNVWM"
+        ]
+
+    @staticmethod
+    def anthracnose_videos():
+        return [
+            "wgHhzxG2lhU",
+            "7avenGmXVSY",
+            "98Ss1O8Wxug"
+        ]
+
+    @staticmethod
+    def bacterial_wilt_videos():
+        return [
+            "RSzTT_gbma4",
+            "RKy0qirIX2c",
+            "XxRzJedrvxE"
+        ]
+
+    @staticmethod
+    def gummy_stem_blight_videos():
+        return [
+            "k6Pk1mZlYvY",
+            "RfdKTYRAsZs"
+        ]

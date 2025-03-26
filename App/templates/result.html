@@ -81,7 +81,7 @@
         #switch-btns{
             display:flex;
             justify-content:center;
-            margin-top: 1vh;
+            margin-top: 2vh;
             gap: 10px;
             flex-wrap:wrap;
             margin-bottom:10px;
@@ -115,8 +115,10 @@
             border: 1px dotted grey;
         }
         .video{
-            height:40vh;
-            width:40vw;
+            min-height:200px;
+            min-width:300px;
+            height: auto;
+            width: 40vw;
         }
         #loader{
             display:none;
@@ -169,7 +171,7 @@
                         <iframe class="video" src="https://www.youtube.com/embed/{{video}}" allowfullscreen> </iframe>
                     {% endfor %}
                 {% else %}
-                    <p style="color:#de3e4f"> No treatments found for this disease </p>
+                    <p style="color:#de3e4f"> No treatment video found for this disease </p>
                 {% endif %}
 
             </div>
@@ -349,7 +351,13 @@
             results.style.display = "none";
         }
         
-        
+        document.addEventListener("DOMContentLoaded", function () {
+            const video = document.querySelector(".video");
+            
+            video.addEventListener("click", function () {
+                    video.webkitRequestFullscreen();
+                });
+            });
     </script>
 
 {% endblock %}
