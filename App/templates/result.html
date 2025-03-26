@@ -82,20 +82,20 @@
             display:flex;
             justify-content:center;
             margin-top: 1vh;
-        }
-        #show-weather{
-            display:none;
+            gap: 10px;
+            flex-wrap:wrap;
+            margin-bottom:10px;
         }
         #show-analysis{
             display:none;
         }
-        #weather{
+        #weather, #treatment{
             display:none;
             flex-direction: column;
             align-items: center;
             justify-content: center;
         }
-        #days-container{
+        #days-container, #videos-container{
             display:flex;
             justify-content: center;
             flex-wrap: wrap;
@@ -113,6 +113,10 @@
             text-align:center;
             min-width: 10vw;
             border: 1px dotted grey;
+        }
+        .video{
+            height:40vh;
+            width:40vw;
         }
         #loader{
             display:none;
@@ -157,13 +161,26 @@
             </div>
             <p id= "disclaimer"> Weather forecast accuracy may be affected if you are using a VPN or any tool that masks your IP address </p>
         </div>
+        <div id="treatment" class="animate__animated animate__fadeIn">
+            <b> {{upload.disease_type}} </b>
+            <div id="videos-container">
+                {% if videos %}
+                    {% for video in videos%}
+                        <iframe class="video" src="https://www.youtube.com/embed/{{video}}" allowfullscreen> </iframe>
+                    {% endfor %}
+                {% else %}
+                    <p style="color:#de3e4f"> No treatments found for this disease </p>
+                {% endif %}
+
+            </div>
+        </div>
         <div id="switch-btns">
-            <button id="load-weather" class="btn" onclick="loadWeather()"> View Weather Report </button>
             <div id="loader" class="progress black">
                 <div class="indeterminate white"></div>
             </div>
-            <button id="show-weather" class="btn" onclick="showWeather()"> View Weather Report </button>
+            <button id="show-weather" class="btn" onclick="loadWeather()"> View Weather Report </button>
             <button id="show-analysis" class="btn" onclick="showAnalysis()"> View Analysis </button>
+            <button id="show-treatment" class="btn" onclick="showTreatment()"> View Treatments </button>
         </div>
 
         {% else %}
@@ -229,39 +246,53 @@
 
 
     <script>
+        const loader = document.getElementById("loader");
         const weatherBtn = document.getElementById("show-weather");
         const weather = document.getElementById("weather");
-        const analysisBtn = document.getElementById("show-analysis");
-        const apiCaller = document.getElementById("load-weather");
-        const results = document.getElementById("results");
         const days = document.querySelectorAll(".day");
         const disclaimer = document.getElementById("disclaimer");
-        const loader = document.getElementById("loader");
+        const analysisBtn = document.getElementById("show-analysis");
+        const results = document.getElementById("results");
+        const treatmentBtn = document.getElementById("show-treatment")
+        const treatments = document.getElementById("treatment");
+        var apiCalled = false;
 
         function loadWeather(){
-            apiCaller.style.display = "none";
-            loader.style.display = "flex";
-            fetch("https://api.ipgeolocation.io/getip")
-            .then(response => response.json())
-            .then(data => {
-                if(data.ip){
-                    getWeather(data.ip);
-                }
-                else{
+            if(!apiCalled){
+                apiCalled = true;
+                weatherBtn.style.display = "none";
+                treatmentBtn.style.display = "none"
+                analysisBtn.style.display = "none";
+                loader.style.display = "flex";
+                fetch("https://api.ipgeolocation.io/getip")
+                .then(response => response.json())
+                .then(data => {
+                    if(data.ip){
+                        getWeather(data.ip);
+                    }
+                    else{
+                        loader.style.display = "none";
+                        analysisBtn.style.display = "flex";
+                        treatmentBtn.style.display = "flex";
+                        M.toast({'html': "Error getting IP address"});
+                        disclaimer.innerText = "Experiencing some issues, please try again later";
+                        disclaimer.style.color = "#de3e4f";
+                        showWeather();
+                    }
+                })
+                .catch(error => {
                     loader.style.display = "none";
-                    M.toast({'html': "Error getting IP address"});
+                    analysisBtn.style.display = "flex";
+                    treatmentBtn.style.display = "flex";
+                    M.toast({'html': "Network error, please try again later"});
                     disclaimer.innerText = "Experiencing some issues, please try again later";
                     disclaimer.style.color = "#de3e4f";
-                    showWeather();
-                }
-            })
-            .catch(error => {
-                loader.style.display = "none";
-                M.toast({'html': "Network error, please try again later"});
-                disclaimer.innerText = "Experiencing some issues, please try again later";
-                disclaimer.style.color = "#de3e4f";
-                showAnalysis();
-            });
+                    showAnalysis();
+                });
+            }
+            else{
+                showWeather();
+            }
         }
 
 
@@ -270,6 +301,7 @@
                 .then(response => response.json())
                 .then(data => {
                     loader.style.display = "none";
+                    treatmentBtn.style.display = "flex";
                     if(data.days){
                         days[0].innerHTML = `<b>${data.days[0].day} </b> 
                                              <p>${data.days[0].weather} </p>
@@ -292,7 +324,9 @@
         function showWeather(){
             weatherBtn.style.display = "none";
             analysisBtn.style.display = "flex";
+            treatmentBtn.style.display = "flex";
             results.style.display = "none";
+            treatments.style.display = "none";
             weather.style.display = "flex";
 
         }
@@ -300,8 +334,19 @@
         function showAnalysis(){
             weatherBtn.style.display = "flex";
             analysisBtn.style.display = "none";
-            weather.style.display = "none";
+            treatmentBtn.style.display = "flex";
             results.style.display = "flex";
+            weather.style.display = "none";
+            treatments.style.display = "none";
+        }
+
+        function showTreatment(){
+            treatmentBtn.style.display ="none";
+            treatments.style.display = "flex";
+            weatherBtn.style.display = "flex";
+            analysisBtn.style.display = "flex";
+            weather.style.display = "none";
+            results.style.display = "none";
         }
         
         

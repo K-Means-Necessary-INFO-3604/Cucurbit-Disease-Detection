@@ -27,7 +27,8 @@ def upload_file():
         image = file.read()
         upload = upload_image(image, current_user.id)
         encoded_img = encode_image(image)
-        return render_template("result.html", upload=upload, image=encoded_img)
+        videos = None
+        return render_template("result.html", upload=upload, image=encoded_img, videos=videos)
     flash("Invalid file")
     return render_template("upload.html")
 
@@ -42,7 +43,8 @@ def upload_file_guest():
         image = file.read()
         upload = upload_guest(image)
         encoded_img = encode_image(image)
-        return render_template("result.html", upload=upload, image=encoded_img)
+        videos = None
+        return render_template("result.html", upload=upload, image=encoded_img, videos=videos)
     flash("Invalid file")
     return render_template("upload.html")
 

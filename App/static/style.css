@@ -8,7 +8,7 @@ html {
     width: max-content;
 }
 
-.btn:hover{
+.btn:hover, .btn:focus{
     background-color: black;
     color: white;
 }
