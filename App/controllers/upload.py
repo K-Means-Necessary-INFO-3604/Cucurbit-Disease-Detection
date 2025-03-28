@@ -11,7 +11,7 @@ import numpy as np
 import io
 from PIL import Image
 from rembg import remove, new_session
-
+import xgboost as xgb
 allowed = {'jpg', 'jpeg', 'png'} 
 
 def upload_image(image, user_id): 
@@ -132,3 +132,9 @@ def remove_background(binary_data):
     image_io.seek(0)
 
     return image_io.read()
+
+#Load model
+def load_model_from_json(json_path):
+    booster = xgb.Booster()
+    booster.load_model(json_path) 
+    return booster
