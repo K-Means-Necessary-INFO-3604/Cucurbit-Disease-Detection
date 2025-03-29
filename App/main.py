@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template
+from flask import Flask, flash, redirect, render_template
 from flask_uploads import DOCUMENTS, IMAGES, TEXT, UploadSet, configure_uploads
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
@@ -35,5 +35,8 @@ def create_app(overrides={}):
     @jwt.unauthorized_loader
     def custom_unauthorized_response(error):
         return render_template('401.html', error=error), 401
+    @jwt.expired_token_loader
+    def custom_expired_response(dict, payload):
+        return redirect("login-page")
     app.app_context().push()
     return app

@@ -8,7 +8,7 @@
     <style>
         body{
             background-image: url(static/images/plant-background.jpg);
-            height:100vh;
+            height:100svh;
             background-size: cover;
             background-position: center;
             color:black;
@@ -17,9 +17,7 @@
         ::placeholder{
             color:#444444;
         }
-        .btn{
-            background-color: #33c488;
-        }
+        
         .container{
             display:grid;
             margin:auto;
@@ -45,7 +43,6 @@
             width:50vw;
         }
         #guestBtn{
-            width:50vw;
             margin:auto;
             margin-top: 20px;
         }
@@ -53,22 +50,20 @@
             margin-top: 30vh;
             width:100%;
         }
-        #cancelBtn{
-            background-color: #e31934;
-            justify-content: center;
-            width:50%;
-            margin:0 auto;
+        .active{
+            background-color: #54c482;
+            color: white;
         }
-        
+
     </style>
 
-    <div class="container">
-        <div id="loginSection">
+    <div id="container" class="container animate__animated animate__backInDown">
+        <div id="loginSection" class="animate__animated animate__zoomIn">
             <h2>Login</h2>
             <form method="POST" action="/login">        
-                <input name="email" placeholder="Enter email..." required>
-                <input name="password" placeholder="Enter password..." type="password" required>
-                <button class="btn"> Login </button>
+                <input id="email" name="email" placeholder="Enter email..." required>
+                <input id="password" name="password" placeholder="Enter password..." type="password" required>
+                <button id="login-btn" class="btn"> Login </button>
             </form>
             <div class="switch">
                 <p>Don't have an account?</p>
@@ -76,7 +71,7 @@
             </div>
         </div>
 
-        <div id="signupSection" class="hidden">
+        <div id="signupSection" class="hidden animate__animated animate__zoomIn">
             <h2>Sign up</h2>
             <form method="POST" action="/signup">        
                 <input id="signup-email" type="text" name="email" placeholder="Enter email..." required>
@@ -93,7 +88,7 @@
             </div>
         </div>
 
-        <a href="/uploadPage" class="btn" id="guestBtn"> Continue as Guest </a>
+        <a href="/upload-page" class="btn" id="guestBtn"> Continue as Guest </a>
     </div>
 
     {% if signup %}
@@ -106,17 +101,53 @@
         const loading = document.getElementById("loading");
         const guestBtn = document.getElementById("guestBtn");
         const signupBtn = document.getElementById("signup-btn");
-        
+        const email = document.getElementById("email");
+        const password = document.getElementById("password");
+        const loginBtn = document.getElementById("login-btn");
+        const signupEmail = document.getElementById("signup-email");
+        const signupPassword = document.getElementById("signup-password");
+        const signupPassword2 = document.getElementById("signup-password2");
 
-        function showLogin(){
+        email.addEventListener("input", () => {
+            filledFields(loginBtn, email, password);
+        });
+        password.addEventListener("input", () => {
+            filledFields(loginBtn, email, password);
+        });
+
+        signupEmail.addEventListener("input", () => {
+            filledFields(signupBtn, signupEmail, signupPassword, signupPassword2);
+        });
+        signupPassword.addEventListener("input", () => {
+            filledFields(signupBtn, signupEmail, signupPassword, signupPassword2);
+        });
+        signupPassword2.addEventListener("input", () => {
+            filledFields(signupBtn, signupEmail, signupPassword, signupPassword2);
+        });
+
+        function filledFields(button, email, password, password2){
+            if(email.value.trim() != "" && password.value.trim() != "" && (password2 ? password2.value.trim() != "" : true)){
+                button.classList.add("active");
+                button.classList.add("pulse");
+            }
+            else{
+                button.classList.remove("active");
+                button.classList.remove("pulse");
+            }
+        }
+
+        function showLogin(){   
             signup.classList.add("hidden");
             login.classList.remove("hidden");
+            login.classList.add("animate__zoomIn");
         }
         function showSignup(){
+            loading.classList.add("hidden");
             login.classList.add("hidden");
             signup.classList.remove("hidden");
+            signup.classList.add("animate__zoomIn");
             signupBtn.classList.remove("hidden");
-            loading.classList.add("hidden");
+
         }
         function showLoading(){
             const email = document.getElementById("signup-email").value;
@@ -137,7 +168,7 @@
 
         if(signupRequest){
             showSignup();
-        }
+        }        
 
     </script>
 

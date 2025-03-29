@@ -15,46 +15,61 @@
             background-color: #24374f;
             background-size: cover;
             color:white;
-            height:100vh;
+            min-height:100vh;
+            height:auto;
             width:100vw;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
         }
-        img{
+        #uploaded-image{
             display:flex;
             margin:0 auto;
-            max-height:50%;
-            max-width:100%;
+            max-height:50vh;
+            max-width:80vw;
             object-fit: contain;
         }
-        .results{
-            display:grid;
+        #results{
+            display:flex;
+            flex-direction: column;
             justify-content: center;
+            align-items:center;
         }
-        .results h5{
+        #results h5{
             font-weight: bold;
             justify-self: center;
         }
-        .results p{
+        #results p{
             justify-self: center;
         }
         blockquote{
             margin-top: 5svh;
             margin-left: 5px;
         }
-        #header-2{
+        #icons{
             margin-top: 10px;
             margin-left: 5px;
             display:inline-flex;
         }
+        .scroller{
+            cursor: pointer; 
+            font-size: 50px; 
+        }
+        .scroller:hover{
+            background-color: white;
+            color:black;
+            border-radius: 100%;
+        }
         #back-to-upload{
             display: inline-flex;
         }
+        #header{
+            display:flex;
+            justify-content:center;
+        }
         .imageSection{
             width:100vw;
-            height:100dvh;
+            min-height:100dvh;
+            height:auto;
             background-color: #3c6a50;
-            color:white
+            color:white;
         }
         .imageSection h2{
             margin-top: 0;
@@ -63,42 +78,125 @@
             display: flex;
             justify-content: center;
         }
+        #switch-btns{
+            display:flex;
+            justify-content:center;
+            margin-top: 2vh;
+            gap: 10px;
+            flex-wrap:wrap;
+            margin-bottom:10px;
+        }
+        #show-analysis{
+            display:none;
+        }
+        #weather, #treatment{
+            display:none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        #days-container, #videos-container{
+            display:flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap:15px;
+        }
+        #disclaimer{
+            margin-top:2vh;
+            text-align: center;
+            color:grey;
+        }
+        .day{
+            background-color: transparent;
+            color:white;
+            padding:10px;
+            text-align:center;
+            min-width: 10vw;
+            border: 1px dotted grey;
+        }
+        .video{
+            min-height:200px;
+            min-width:300px;
+            height: auto;
+            width: 40vw;
+        }
+        #loader{
+            display:none;
+            max-width:50%;
+        }
         
     </style>
     
     <div class="container">
-    {% if upload %}
-    <div style="display:flex">
-        <h2 style="margin:0; padding:0;">Results: </h2>
-        <i style="cursor: pointer; font-size: 50px; margin-left: auto; margin-right: 1vw;"onclick="scrollDown()" class="material-symbols-outlined">arrow_circle_down</i>
-    </div>
-    <div id="header-2">
-        <a id="back-to-upload" class="btn" href="/uploadPage"> <i class="material-icons">keyboard_backspace</i> Back to upload</a>
-    </div>
+        {% if upload %}
+        <div style="display:flex">
+            <div id="icons">
+                <a id="back-to-upload" class="btn" href="/upload-page"> <i class="material-icons">keyboard_backspace</i> Back to upload</a>
+            </div>
+            <i style="margin-left: auto; margin-right: 1vw;" onclick="scrollDown()" class="material-symbols-outlined scroller">arrow_circle_down</i>
+        </div>
+        <div id="header">
+            <h2 style="margin:auto;">Results: </h2>
+        </div>
         <blockquote>Scroll to see the uploaded image</blockquote>
-    <div class="results">
+        <div id="results" class="animate__animated animate__fadeIn">
 
-        <h5> Disease type: </h5>
-        <p>{{upload.disease_type}}</p>
-        <h5> Severity: </h5>
-        <p>{{upload.severity}} %</p>
-        <h5> Remedial Actions: </h5>
-        <p>{{upload.actions}}</p>
-        
-    </div>
+            <h5> Disease type: </h5>
+            <p>{{upload.disease_type}}</p>
+            <h5> Severity: </h5>
+            <p>{{upload.severity}} %</p>
+            <h5> Remedial Actions: </h5>
+            <p>{{upload.actions}}</p>
+            
+        </div>
+        <div id="weather">
+            <div id="days-container">
+                <div class="day card animate__animated animate__fadeIn">
+                    
+                </div>
+                <div class="day card animate__animated animate__fadeIn" style="animation-delay:0.3s">
 
-    {% else %}
-    <div>
-        <h2>Error </h2>
-        <p>Error displaying results</p>
-        <a class="btn" href="/"> Go Home </a>
-    </div>
-    {% endif %}
+                </div>
+                <div class="day card animate__animated animate__fadeIn" style="animation-delay:.6s">
+
+                </div>
+            </div>
+            <p id= "disclaimer"> Weather forecast accuracy may be affected if you are using a VPN or any tool that masks your IP address </p>
+        </div>
+        <div id="treatment" class="animate__animated animate__fadeIn">
+            <b> {{upload.disease_type}} </b>
+            <div id="videos-container">
+                {% if videos %}
+                    {% for video in videos%}
+                        <iframe class="video" src="https://www.youtube.com/embed/{{video}}" allowfullscreen> </iframe>
+                    {% endfor %}
+                {% else %}
+                    <p style="color:#de3e4f"> No treatment video found for this disease </p>
+                {% endif %}
+
+            </div>
+        </div>
+        <div id="switch-btns">
+            <div id="loader" class="progress black">
+                <div class="indeterminate white"></div>
+            </div>
+            <button id="show-weather" class="btn" onclick="loadWeather()"> View Weather Report </button>
+            <button id="show-analysis" class="btn" onclick="showAnalysis()"> View Analysis </button>
+            <button id="show-treatment" class="btn" onclick="showTreatment()"> View Treatments </button>
+        </div>
+
+        {% else %}
+        <div>
+            <h2>Error </h2>
+            <p>Error displaying results</p>
+            <a class="btn" href="/"> Go Home </a>
+        </div>
+        {% endif %}
     </div>
 
     {% if upload %}
     <div class="imageSection">
-        <i style="cursor: pointer; font-size: 50px;"onclick="backToTop()" class="material-symbols-outlined">arrow_circle_up</i>
+        <i style="cursor: pointer; font-size: 50px;"onclick="backToTop()" class="material-symbols-outlined scroller">arrow_circle_up</i>
 
         <div style="text-align: center;">
             <h2>Upload</h2>
@@ -112,7 +210,7 @@
         {% endif %}
         </div>
         {% if image %}
-            <img src="{{image}}" class="uploadImage">
+            <img id="uploaded-image" src="{{image}}" class="uploadImage">
         {% endif %}
     </div>
     {% endif %}
@@ -123,6 +221,13 @@
         const dateWithTime = dateElement.innerText
         let dateExtract = new Date(dateWithTime);
         dateElement.innerText = `Date - ${dateExtract.toISOString().split('T')[0]}`;
+
+        const confettiConfig = {
+            particleCount:100
+        }
+        window.onload = function() {
+            confetti(confettiConfig);
+        }
 
         function backToTop(){
             window.scrollTo({
@@ -138,7 +243,121 @@
                 behavior: "smooth"
             });
         }
+
+    </script>
+
+
+    <script>
+        const loader = document.getElementById("loader");
+        const weatherBtn = document.getElementById("show-weather");
+        const weather = document.getElementById("weather");
+        const days = document.querySelectorAll(".day");
+        const disclaimer = document.getElementById("disclaimer");
+        const analysisBtn = document.getElementById("show-analysis");
+        const results = document.getElementById("results");
+        const treatmentBtn = document.getElementById("show-treatment")
+        const treatments = document.getElementById("treatment");
+        var apiCalled = false;
+
+        function loadWeather(){
+            if(!apiCalled){
+                apiCalled = true;
+                weatherBtn.style.display = "none";
+                treatmentBtn.style.display = "none"
+                analysisBtn.style.display = "none";
+                loader.style.display = "flex";
+                fetch("https://api.ipgeolocation.io/getip")
+                .then(response => response.json())
+                .then(data => {
+                    if(data.ip){
+                        getWeather(data.ip);
+                    }
+                    else{
+                        loader.style.display = "none";
+                        analysisBtn.style.display = "flex";
+                        treatmentBtn.style.display = "flex";
+                        M.toast({'html': "Error getting IP address"});
+                        disclaimer.innerText = "Experiencing some issues, please try again later";
+                        disclaimer.style.color = "#de3e4f";
+                        showWeather();
+                    }
+                })
+                .catch(error => {
+                    loader.style.display = "none";
+                    analysisBtn.style.display = "flex";
+                    treatmentBtn.style.display = "flex";
+                    M.toast({'html': "Network error, please try again later"});
+                    disclaimer.innerText = "Experiencing some issues, please try again later";
+                    disclaimer.style.color = "#de3e4f";
+                    showAnalysis();
+                });
+            }
+            else{
+                showWeather();
+            }
+        }
+
+
+        function getWeather(address){
+            fetch(`/api/get-weather/${address}`)
+                .then(response => response.json())
+                .then(data => {
+                    loader.style.display = "none";
+                    treatmentBtn.style.display = "flex";
+                    if(data.days){
+                        days[0].innerHTML = `<b>${data.days[0].day} </b> 
+                                             <p>${data.days[0].weather} </p>
+                                             <p>${data.days[0].temperature} °C</p>`;
+                        days[1].innerHTML = `<b>${data.days[1].day} </b> 
+                                             <p>${data.days[1].weather} </p>
+                                             <p>${data.days[1].temperature} °C</p>`;
+                        days[2].innerHTML = `<b>${data.days[2].day} </b> 
+                                             <p>${data.days[2].weather} </p>
+                                             <p>${data.days[2].temperature} °C</p>`;
+                    }
+                    else if(data.error){
+                        disclaimer.innerText = "Sorry there was an error loading weather data. Please try again tomorrow";
+                        disclaimer.style.color = "#de3e4f";
+                    }
+                    showWeather()
+                });
+        }
+
+        function showWeather(){
+            weatherBtn.style.display = "none";
+            analysisBtn.style.display = "flex";
+            treatmentBtn.style.display = "flex";
+            results.style.display = "none";
+            treatments.style.display = "none";
+            weather.style.display = "flex";
+
+        }
+
+        function showAnalysis(){
+            weatherBtn.style.display = "flex";
+            analysisBtn.style.display = "none";
+            treatmentBtn.style.display = "flex";
+            results.style.display = "flex";
+            weather.style.display = "none";
+            treatments.style.display = "none";
+        }
+
+        function showTreatment(){
+            treatmentBtn.style.display ="none";
+            treatments.style.display = "flex";
+            weatherBtn.style.display = "flex";
+            analysisBtn.style.display = "flex";
+            weather.style.display = "none";
+            results.style.display = "none";
+        }
         
+        document.addEventListener("DOMContentLoaded", function () {
+            const video = document.querySelector(".video");
+            
+            video.addEventListener("click", function () {
+                    video.webkitRequestFullscreen();
+                });
+            });
     </script>
 
 {% endblock %}

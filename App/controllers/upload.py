@@ -1,3 +1,4 @@
+from App.disease_recommendations import DiseaseRecommendations
 from App.models import Upload 
 from App.database import db 
 import cv2 
@@ -11,7 +12,9 @@ import numpy as np
 import io
 from PIL import Image
 from rembg import remove, new_session
+import geocoder
 import xgboost as xgb
+
 allowed = {'jpg', 'jpeg', 'png'} 
 
 def upload_image(image, user_id): 
@@ -133,6 +136,40 @@ def remove_background(binary_data):
 
     return image_io.read()
 
+def get_lat_lng(address):
+    ip = geocoder.ip(address)
+    if ip.latlng:
+        return ip.latlng
+    else:
+        return None
+    
+def get_disease_videos(disease):
+    disease = disease.title()
+    print(disease)
+    
+    if disease == "Downy Mildew":
+        return DiseaseRecommendations.downy_mildew_videos()
+        
+    if disease == "Powdery Mildew":
+        return DiseaseRecommendations.powdery_mildew_videos()
+    
+    if disease == "Mosaic Disease":
+        return DiseaseRecommendations.mosaic_disease_videos()
+
+    if disease == "Bacterial Leaf Spot":
+        return DiseaseRecommendations.bacterial_leaf_spot_videos()
+
+    if disease == "Anthracnose":
+        return DiseaseRecommendations.anthracnose_videos()
+    
+    if disease == "Bacterial Wilt":
+        return DiseaseRecommendations.bacterial_wilt_videos()
+        
+    if disease == "Gummy Stem Blight":
+        return DiseaseRecommendations.gummy_stem_blight_videos()
+    
+    return None
+  
 #Load model
 def load_model_from_json(json_path):
     booster = xgb.Booster()

@@ -1,10 +1,16 @@
 {% extends "layout.html" %}
 {% block title %}Not Authorized{% endblock %}
-{% block page %}Not Auhtorized{% endblock %}
 
 {{ super() }}
 
 {% block content %}
+
+<style>
+    body{
+        background-color:#171717;
+        color:white;
+    }
+</style>
 <div class="container">
     <div class="row" style="margin-top: 10%;">
         <div class="col s12 m10 offset-m1">
@@ -14,7 +20,7 @@
                 <p>{{error}}</p>
             </div>
             <div class="card-action">
-                <a href="/" class="waves-effect waves-light btn">Go Home</a>
+                <a href="/" class="waves-effect waves-light btn">Go to Login</a>
                 <a href="javascript:history.back()" class="waves-effect waves-light btn">Go Back</a>
             </div>
         </div>

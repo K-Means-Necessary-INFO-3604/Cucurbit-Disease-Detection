@@ -28,4 +28,5 @@ google-auth
 google-api-python-client
 rembg
 onnxruntime
+geocoder
 xgboost

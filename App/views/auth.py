@@ -39,7 +39,7 @@ def identify_page():
 def login_action():
     data = request.form
     token = login(data['email'], data['password'])
-    response = redirect("/uploadPage")
+    response = redirect("/upload-page")
     if not token:
         flash('Bad email or password given'), 401
         response = redirect("/")
@@ -101,7 +101,7 @@ def verify_email():
         create_user(email, password)
         token = login(email,password)
         flash("User created")
-        response = redirect("/uploadPage")
+        response = redirect("/upload-page")
         set_access_cookies(response, token)
         return response
     else:
