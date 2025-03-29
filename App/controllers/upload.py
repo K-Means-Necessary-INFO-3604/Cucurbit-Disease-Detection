@@ -13,6 +13,7 @@ import io
 from PIL import Image
 from rembg import remove, new_session
 import geocoder
+import xgboost as xgb
 
 allowed = {'jpg', 'jpeg', 'png'} 
 
@@ -168,3 +169,9 @@ def get_disease_videos(disease):
         return DiseaseRecommendations.gummy_stem_blight_videos()
     
     return None
+  
+#Load model
+def load_model_from_json(json_path):
+    booster = xgb.Booster()
+    booster.load_model(json_path) 
+    return booster
