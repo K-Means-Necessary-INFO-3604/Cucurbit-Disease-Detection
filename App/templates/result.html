@@ -146,8 +146,9 @@
             <h5> Severity: </h5>
             <p>{{upload.severity}} %</p>
             <h5> Remedial Actions: </h5>
-            <p>{{upload.actions}}</p>
-            
+            {% for action in upload.actions.split('.') %}
+                <p>{{action}}</p>
+            {% endfor %}
         </div>
         <div id="weather">
             <div id="days-container">
