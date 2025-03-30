@@ -25,9 +25,13 @@ def upload_file():
     if validated:
         image = file.read()
         upload = upload_image(image, current_user.id)
-        encoded_img = encode_image(image)
-        videos = None
-        return render_template("result.html", upload=upload, image=encoded_img, videos=videos)
+        if upload:
+            encoded_img = encode_image(image)
+            videos = get_disease_videos(upload.disease_type)
+            return render_template("result.html", upload=upload, image=encoded_img, videos=videos)
+        else:
+            flash("Error analyzing image")
+            return redirect("/upload-page")
     flash("Invalid file")
     return render_template("upload.html")
 
@@ -41,9 +45,13 @@ def upload_file_guest():
     if validated:
         image = file.read()
         upload = upload_guest(image)
-        encoded_img = encode_image(image)
-        videos = None
-        return render_template("result.html", upload=upload, image=encoded_img, videos=videos)
+        if upload:
+            encoded_img = encode_image(image)
+            videos = get_disease_videos(upload.disease_type)
+            return render_template("result.html", upload=upload, image=encoded_img, videos=videos)
+        else:
+            flash("Error analyzing image")
+            return redirect("/upload-page")
     flash("Invalid file")
     return render_template("upload.html")
 

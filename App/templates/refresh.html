@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block title %}Home{% endblock %}
+
+{{ super() }}
+
+{% block content %}
+
+<style>
+    body{
+        background-color:#272727;
+        color:white;
+    }
+    form{
+        margin:0 auto; 
+        margin-top:20svh;
+        display:flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    input{
+        color:white;
+        text-align: center;
+    }
+
+</style>
+
+{% if current_user.email == 'admin' %}
+<form action="/new-token" method="POST">
+    <input type="text" name="token" placeholder="Enter token here">
+    <button type="submit" class="btn"> Submit </button>
+</form>
+{% endif %}
+{% endblock %}

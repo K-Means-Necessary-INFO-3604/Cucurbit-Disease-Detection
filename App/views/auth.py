@@ -11,7 +11,7 @@ from App.controllers import (
     confirm_password,
     get_all_users,
     validate_email_address,
-    run_flow,
+    create_new_token,
 )
 
 from App.encryption import encrypt, decrypt
@@ -141,10 +141,21 @@ def logout_api():
     unset_jwt_cookies(response)
     return response
 
-@auth_views.route('/OAuthFlow', methods=['GET'])
+@auth_views.route('/token', methods=['GET'])
 @jwt_required()
-def initiate_OAuth_flow():
+def token():
     if current_user.email == "admin":
-        status = run_flow()
-        return jsonify(message=status)
+        return render_template("refresh.html")
+    return redirect("/")
+
+@auth_views.route('/new-token', methods=['POST'])
+@jwt_required()
+def new_token():
+    if current_user.email == "admin":
+        token = request.form['token']
+        status = create_new_token(token)
+        if status:
+            flash("Successful")
+        else:
+            flash("Error")
     return redirect("/")

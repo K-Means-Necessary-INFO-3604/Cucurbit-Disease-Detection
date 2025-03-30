@@ -32,7 +32,8 @@
             object-position: center;
         }
         #selected_img{
-            height:50vh;
+            max-height:50vh;
+            max-width:80vw;
             object-fit:contain;
         }
         .hidden{
@@ -68,7 +69,6 @@
                                 <div class="card-content">
                                     <p> Severity - {{upload.severity}} %</p>
                                     <p> Type - {{upload.disease_type}} </p>
-                                    <p> Actions - {{upload.actions}} </p>
                                 </div>
                             </div>
                     {% endif %}
@@ -86,7 +86,7 @@
         <div id="info">
             <p id="severity"></p>
             <p id="type"></p>
-            <p id="actions"></p>
+            <div id="actions"> <p> Actions - </p></div>
             <p id="selected_date"> </p>
         </div>
     </div>
@@ -134,7 +134,12 @@
                     img.src = `data:image/jpeg;base64,${data.image}`;
                     severity.innerText = `Severity - ${data.severity} %`;
                     type.innerText = `Disease type - ${data.type}`;
-                    actions.innerText = `Actions - ${data.actions}`;
+                    allActions = data.actions.split('.');
+                    allActions.forEach(action => {
+                        let p = document.createElement('p');
+                        p.innerHTML = `${action}`;
+                        actions.appendChild(p);
+                    });
                 }
             });
         }

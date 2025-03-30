@@ -14,24 +14,41 @@ from PIL import Image
 from rembg import remove, new_session
 import geocoder
 import xgboost as xgb
+import torch
+from torchvision import transforms, models
+
 
 allowed = {'jpg', 'jpeg', 'png'} 
 
 def upload_image(image, user_id): 
     ast = pytz.timezone("America/Port_of_Spain") 
     date = datetime.now(ast) 
-    severity = calculate_severity(image) 
-    upload = Upload(image=image, date=date.date(), severity=severity, user_id=user_id) 
-    db.session.add(upload) 
-    db.session.commit() 
-    return upload 
+    severity, disease = analyze_leaf(image)
+    if severity is not None and disease is not None:
+        action_list = get_disease_actions(disease)
+        if action_list:
+            actions=""
+            for action in action_list:
+                actions = actions + " " + action
+            upload = Upload(image=image, date=date.date(), user_id=user_id, disease_type=disease, severity=severity, actions=actions) 
+            db.session.add(upload) 
+            db.session.commit() 
+            return upload
+    return None
 
 def upload_guest(image): 
     ast = pytz.timezone("America/Port_of_Spain") 
     date = datetime.now(ast) 
-    severity = calculate_severity(image) 
-    upload = Upload(image=image, date=date, severity=severity)  
-    return upload 
+    severity, disease = analyze_leaf(image) 
+    if severity is not None and disease is not None:
+        action_list = get_disease_actions(disease)
+        if action_list:
+            actions=""
+            for action in action_list:
+                actions = actions + " " + action
+            upload = Upload(image=image, date=date.date(), disease_type=disease,severity=severity, actions=actions)  
+            return upload
+    return None
 
 def get_upload(id): 
     upload = Upload.query.get(id) 
@@ -68,12 +85,13 @@ def encode_image(image):
     encoded_img = base64.b64encode(image).decode("utf-8")  
     return f"data:image/jpeg;base64,{encoded_img}" 
 
-def calculate_severity(binary_data):
+
+def segment_image(binary_data):
     binary_data = remove_background(binary_data)
     nparr = np.frombuffer(binary_data, np.uint8) 
     image = cv2.imdecode(nparr, cv2.IMREAD_COLOR) 
     if image is None: 
-        print(f"Image not found") 
+        return None, None
     else: 
         image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)   
         image_resized = cv2.resize(image_rgb, (300, 300))   
@@ -102,17 +120,34 @@ def calculate_severity(binary_data):
         diseased_mask = cv2.bitwise_or(diseased_mask, green_near_disease) 
         diseased_only = np.zeros_like(image_resized) 
         diseased_only[diseased_mask != 0] = image_resized[diseased_mask != 0] 
-        
+    return diseased_only, image_resized
+    
+
+def analyze_leaf(binary_data):
+    segmented_image, image_resized = segment_image(binary_data)
+    severity = calculate_severity(segmented_image, image_resized)
+    if severity is not None:
+        image = Image.fromarray(segmented_image)
+        features = extract_features(image)
+        disease = classify_disease(model, features)
+        if disease is None:
+            return None, None
+        return severity, disease
+    return None, None
+    
+
+def calculate_severity(diseased_only, image_resized):
+    
+    if diseased_only is not None and image_resized is not None:
         diseased_pixels = np.count_nonzero(np.all(diseased_only != 0, axis=-1)) 
         leaf_mask = np.all(image_resized != [0, 0, 0], axis=-1) 
+
         total_leaf_pixels = np.count_nonzero(leaf_mask)   
         severity_ratio = (diseased_pixels / total_leaf_pixels) * 100 if total_leaf_pixels > 0 else 0 
         
-        print(f"Diseased Pixels: {diseased_pixels}") 
-        print(f"Total Leaf Pixels: {total_leaf_pixels}")  
-        print(f"Severity Ratio: {severity_ratio}%") 
-        
         severity_ratio = ceil(severity_ratio * 1000) / 1000  
+    else:
+        return None
     return severity_ratio
 
 def remove_background(binary_data):
@@ -142,36 +177,113 @@ def get_lat_lng(address):
         return ip.latlng
     else:
         return None
+
+
+model = xgb.Booster()
+model.load_model('ml_models/xgb_model_complete.json') 
+
+transform = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+])
+
+resnet = models.resnet50(pretrained=True)
+
+
+def extract_features(image):
     
+    image_tensor = transform(image).unsqueeze(0)
+
+    with torch.no_grad():
+        x = resnet.conv1(image_tensor)
+        x = resnet.bn1(x)
+        x = resnet.relu(x)
+        x = resnet.maxpool(x)
+        x = resnet.layer1(x)
+        x = resnet.layer2(x)
+        x = resnet.layer3(x)
+        x = resnet.layer4(x)
+        x = resnet.avgpool(x)
+        x = torch.flatten(x, 1)
+
+    features = x.cpu().numpy().flatten() 
+    return features
+
+def classify_disease(model, image_features):
+    dmatrix = xgb.DMatrix(image_features.reshape(1, -1))
+    predictions = model.predict(dmatrix)
+    print(predictions[0])
+    name = get_disease_name(predictions[0])
+    return name
+
+def get_disease_name(disease):
+    if disease == 0.0:
+        return "Cucumber Anthracnose"
+    if disease == 1.0:
+        return "Cucumber Bacterial Wilt"
+    if disease == 2.0:
+        return "Cucumber Downy Mildew"
+    if disease == 3.0:
+        return "Cucumber Gummy Stem Blight"
+    if disease == 4.0:
+        return "Pumpkin Bacterial Leaf Spot"
+    if disease == 5.0:
+        return "Pumpkin Downy Mildew"
+    if disease == 6.0:
+        return "Pumpkin Mosaic Disease"
+    if disease == 7.0:
+        return "Pumpkin Powdery Mildew"
+    return None
+
 def get_disease_videos(disease):
     disease = disease.title()
-    print(disease)
     
-    if disease == "Downy Mildew":
+    if disease == "Cucumber Downy Mildew" or disease == "Pumpkin Downy Mildew":
         return DiseaseRecommendations.downy_mildew_videos()
         
-    if disease == "Powdery Mildew":
+    if disease == "Pumpkin Powdery Mildew":
         return DiseaseRecommendations.powdery_mildew_videos()
     
-    if disease == "Mosaic Disease":
+    if disease == "Pumpkin Mosaic Disease":
         return DiseaseRecommendations.mosaic_disease_videos()
 
-    if disease == "Bacterial Leaf Spot":
+    if disease == "Pumpkin Bacterial Leaf Spot":
         return DiseaseRecommendations.bacterial_leaf_spot_videos()
 
-    if disease == "Anthracnose":
+    if disease == "Cucumber Anthracnose":
         return DiseaseRecommendations.anthracnose_videos()
     
-    if disease == "Bacterial Wilt":
+    if disease == "Cucumber Bacterial Wilt":
         return DiseaseRecommendations.bacterial_wilt_videos()
         
-    if disease == "Gummy Stem Blight":
+    if disease == "Cucumber Gummy Stem Blight":
         return DiseaseRecommendations.gummy_stem_blight_videos()
     
     return None
-  
-#Load model
-def load_model_from_json(json_path):
-    booster = xgb.Booster()
-    booster.load_model(json_path) 
-    return booster
+
+def get_disease_actions(disease):
+    disease = disease.title()
+    
+    if disease == "Cucumber Downy Mildew" or disease == "Pumpkin Downy Mildew":
+        return DiseaseRecommendations.downy_mildew()
+        
+    if disease == "Pumpkin Powdery Mildew":
+        return DiseaseRecommendations.powdery_mildew()
+    
+    if disease == "Pumpkin Mosaic Disease":
+        return DiseaseRecommendations.mosaic_disease()
+
+    if disease == "Pumpkin Bacterial Leaf Spot":
+        return DiseaseRecommendations.bacterial_leaf_spot()
+
+    if disease == "Cucumber Anthracnose":
+        return DiseaseRecommendations.anthracnose()
+    
+    if disease == "Cucumber Bacterial Wilt":
+        return DiseaseRecommendations.bacterial_wilt()
+        
+    if disease == "Cucumber Gummy Stem Blight":
+        return DiseaseRecommendations.gummy_stem_blight()
+    
+    return None
