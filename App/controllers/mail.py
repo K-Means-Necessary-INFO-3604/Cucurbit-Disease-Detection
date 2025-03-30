@@ -21,7 +21,6 @@ def get_credentials():
         with open("encrypted_token.txt", "rb") as token_file:
             encrypted_token = token_file.read()
             token_string = decrypt(encrypted_token)
-            print(token_string)
     except Exception as e:
         print(e)
         return None
@@ -86,27 +85,12 @@ def send_verification(email):
         print(f"An error occurred: {e}")
         return None
     
-def run_flow():
+def create_new_token(token):
     try:
-        with open("encrypted_credentials.txt", 'rb') as credentials_file:
-            data = credentials_file.read()
-            decrypted_credentials = decrypt(data)
-        if decrypted_credentials:
-            creds = json.loads(decrypted_credentials)
-        
-        flow = InstalledAppFlow.from_client_config(
-            creds,  
-            scopes=SCOPES,
-            redirect_uri="https://phytoguard.onrender.com"
-        )
-        flow.fetch_token(authorization_response=request.url, access_type="offline", prompt="consent")
-        creds = flow.credentials
-        #creds = flow.run_local_server(port=8080, access_type="offline", prompt="consent")
-        print(creds.to_json())
-        with open("encrypted_token.txt", 'wb') as token_file:
-            encrypted_token = encrypt(creds.to_json())
-            token_file.write(encrypted_token)
-        return "Token Successfully updated"
+        with open("encrypted_token.txt", "wb") as token_file:
+            token_file.write(token.encode('utf-8'))
+            print(decrypt(token.encode("utf-8")))
+            return True
     except Exception as e:
         print(e)
-        return "Error perrforming OAuth flow"
+        return False
