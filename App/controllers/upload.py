@@ -218,21 +218,21 @@ def classify_disease(model, image_features):
     return name
 
 def get_disease_name(disease):
-    if disease == 1.0:
+    if disease == 0.0:
         return "Cucumber Anthracnose"
-    if disease == 2.0:
+    if disease == 1.0:
         return "Cucumber Bacterial Wilt"
-    if disease == 3.0:
+    if disease == 2.0:
         return "Cucumber Downy Mildew"
-    if disease == 4.0:
+    if disease == 3.0:
         return "Cucumber Gummy Stem Blight"
-    if disease == 5.0:
+    if disease == 4.0:
         return "Pumpkin Bacterial Leaf Spot"
-    if disease == 6.0:
+    if disease == 5.0:
         return "Pumpkin Downy Mildew"
+    if disease == 6.0:
+        return "Pumpkin Mosaic Disease"
     if disease == 7.0:
-        return "Pumpkin Mosaic"
-    if disease == 8.0:
         return "Pumpkin Powdery Mildew"
     return None
 
