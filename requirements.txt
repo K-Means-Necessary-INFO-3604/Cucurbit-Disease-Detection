@@ -30,4 +30,3 @@ rembg
 onnxruntime
 geocoder
 xgboost
-torchvision
