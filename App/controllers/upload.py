@@ -13,8 +13,8 @@ from PIL import Image
 from rembg import remove, new_session
 import geocoder
 import xgboost as xgb
-#import torch
-#from torchvision import transforms, models
+import torch
+from torchvision import transforms, models
 import onnxruntime as ort
 
 allowed = {'jpg', 'jpeg', 'png'} 
@@ -181,15 +181,14 @@ def get_lat_lng(address):
 model = xgb.Booster()
 model.load_model('ml_models/xgb_model_complete.json') 
 
-'''
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
 ])
-'''
 
-'''
+
+
 resnet = models.resnet50(pretrained=True)     
 
 
@@ -211,7 +210,9 @@ def extract_features(image):
 
     features = x.cpu().numpy().flatten() 
     return features
-'''
+    
+    
+''' Using an Inference session
 
 session = ort.InferenceSession("ml_models/model.onnx")
 
@@ -231,7 +232,7 @@ def extract_features(image):
     output_tensor = outputs[1]
     print(output_tensor)
     return output_tensor.flatten()
-
+'''
 
 def classify_disease(model, image_features):
     dmatrix = xgb.DMatrix(image_features.reshape(1, -1))
