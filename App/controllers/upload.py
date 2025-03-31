@@ -5,7 +5,6 @@ import cv2
 import base64 
 from datetime import datetime 
 import pytz 
-import numpy as np 
 from math import ceil 
 import random
 import numpy as np
@@ -16,7 +15,7 @@ import geocoder
 import xgboost as xgb
 import torch
 from torchvision import transforms, models
-
+import onnxruntime as ort
 
 allowed = {'jpg', 'jpeg', 'png'} 
 
@@ -188,7 +187,9 @@ transform = transforms.Compose([
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
 ])
 
-resnet = models.resnet50(pretrained=True)
+
+'''
+resnet = models.resnet50(pretrained=True)     
 
 
 def extract_features(image):
@@ -209,6 +210,18 @@ def extract_features(image):
 
     features = x.cpu().numpy().flatten() 
     return features
+'''
+
+session = ort.InferenceSession("ml_models/model.onnx")
+
+def extract_features(image):
+    image_tensor = transform(image).unsqueeze(0).numpy()
+
+    outputs = session.run(None, {"pixel_values": image_tensor})
+    output_tensor = outputs[1]
+    print(output_tensor)
+    return output_tensor.flatten()
+
 
 def classify_disease(model, image_features):
     dmatrix = xgb.DMatrix(image_features.reshape(1, -1))
