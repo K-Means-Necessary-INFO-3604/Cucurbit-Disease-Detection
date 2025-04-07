@@ -5,9 +5,9 @@ Installing dependencies:
 $ pip install -r requirements.txt
 
 APIs used:
-Gmail API (requires key for decrypting token) 
-Meteosource Global Weather API (requires API key)
-https://api.ipgeolocation.io/getip
+- Gmail API (requires key for decrypting token) 
+- Meteosource Global Weather API (requires API key)
+- https://api.ipgeolocation.io/getip
 
 
 Running the project:
